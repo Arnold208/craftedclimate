@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart'; // Import the Syncfusion gauges package
 
 class DeviceDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> device;
@@ -112,7 +112,6 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
-
                       // Device AUID, location, and status row with placeholders and values underneath
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,13 +138,6 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // AQI Gauge
-                      if (dataPoints != null && dataPoints!['aqi'] != null)
-                        Center(
-                          child: AQIGauge(
-                              aqi: (dataPoints!['aqi'] as num).toDouble()),
-                        ),
-                      const SizedBox(height: 16),
 
                       Text(
                         'TELEMETRY',
@@ -178,6 +170,12 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                               ),
                             ],
                           ),
+                        const SizedBox(height: 16),
+                        // AQI Gauge
+                        if (dataPoints!['aqi'] != null)
+                          AQIGauge(
+                              aqi: (dataPoints!['aqi'] as num)
+                                  .toDouble()), // Ensure AQI value is a double
                         const SizedBox(height: 16),
                         // Timestamp
                         Center(
@@ -287,9 +285,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
 
   String _formatMetricValue(dynamic value) {
     if (value is num) {
-      return value
-          .toDouble()
-          .toStringAsFixed(2); // Ensure value is cast to double
+      return value.toStringAsFixed(2);
     }
     return value.toString();
   }
@@ -427,40 +423,36 @@ class AQIGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 200,
-      child: SfRadialGauge(
-        axes: <RadialAxis>[
-          RadialAxis(
-            minimum: 0,
-            maximum: 500,
-            ranges: <GaugeRange>[
-              GaugeRange(startValue: 0, endValue: 50, color: Colors.green),
-              GaugeRange(startValue: 50, endValue: 100, color: Colors.yellow),
-              GaugeRange(startValue: 100, endValue: 150, color: Colors.orange),
-              GaugeRange(startValue: 150, endValue: 200, color: Colors.red),
-              GaugeRange(startValue: 200, endValue: 300, color: Colors.purple),
-              GaugeRange(startValue: 300, endValue: 500, color: Colors.brown),
-            ],
-            pointers: <GaugePointer>[
-              NeedlePointer(value: aqi),
-            ],
-            annotations: <GaugeAnnotation>[
-              GaugeAnnotation(
-                widget: Container(
-                  child: Text(
-                    aqi.toStringAsFixed(2),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
+    return SfRadialGauge(
+      axes: <RadialAxis>[
+        RadialAxis(
+          minimum: 0,
+          maximum: 500,
+          ranges: <GaugeRange>[
+            GaugeRange(startValue: 0, endValue: 50, color: Colors.green),
+            GaugeRange(startValue: 50, endValue: 100, color: Colors.yellow),
+            GaugeRange(startValue: 100, endValue: 150, color: Colors.orange),
+            GaugeRange(startValue: 150, endValue: 200, color: Colors.red),
+            GaugeRange(startValue: 200, endValue: 300, color: Colors.purple),
+            GaugeRange(startValue: 300, endValue: 500, color: Colors.brown),
+          ],
+          pointers: <GaugePointer>[
+            NeedlePointer(value: aqi),
+          ],
+          annotations: <GaugeAnnotation>[
+            GaugeAnnotation(
+              widget: Container(
+                child: Text(
+                  aqi.toStringAsFixed(2),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
-                angle: 90,
-                positionFactor: 0.5,
-              )
-            ],
-          ),
-        ],
-      ),
+              ),
+              angle: 90,
+              positionFactor: 0.5,
+            )
+          ],
+        ),
+      ],
     );
   }
 }
