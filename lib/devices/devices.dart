@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:craftedclimate/aqi/aqi_gauge.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class DeviceDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> device;
@@ -156,7 +156,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       if (dataPoints != null) ...[
                         // First 4 Environment metrics cards
                         Wrap(
-                          spacing: 16.0,
+                          spacing: 42.0,
                           runSpacing: 16.0,
                           children: _buildMetricCards(dataPoints!, limit: 4),
                         ),
@@ -183,11 +183,12 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         Center(
                           child: Text(
                             timestamp ?? 'N/A',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.grey),
                           ),
                         ),
                       ] else ...[
-                        Center(
+                        const Center(
                           child: Text(
                             'No telemetry from sensor',
                             style: TextStyle(
@@ -415,51 +416,6 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class AQIGauge extends StatelessWidget {
-  final double aqi;
-
-  const AQIGauge({Key? key, required this.aqi}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 200,
-      child: SfRadialGauge(
-        axes: <RadialAxis>[
-          RadialAxis(
-            minimum: 0,
-            maximum: 500,
-            ranges: <GaugeRange>[
-              GaugeRange(startValue: 0, endValue: 50, color: Colors.green),
-              GaugeRange(startValue: 50, endValue: 100, color: Colors.yellow),
-              GaugeRange(startValue: 100, endValue: 150, color: Colors.orange),
-              GaugeRange(startValue: 150, endValue: 200, color: Colors.red),
-              GaugeRange(startValue: 200, endValue: 300, color: Colors.purple),
-              GaugeRange(startValue: 300, endValue: 500, color: Colors.brown),
-            ],
-            pointers: <GaugePointer>[
-              NeedlePointer(value: aqi),
-            ],
-            annotations: <GaugeAnnotation>[
-              GaugeAnnotation(
-                widget: Container(
-                  child: Text(
-                    aqi.toStringAsFixed(2),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                angle: 90,
-                positionFactor: 0.5,
-              )
-            ],
-          ),
-        ],
       ),
     );
   }

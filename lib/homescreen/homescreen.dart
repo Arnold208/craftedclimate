@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:craftedclimate/devices/devices.dart';
+import 'package:craftedclimate/devices/solosense/solosense.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -566,12 +567,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DeviceDetailsScreen(device: device),
-          ),
-        );
+        if (device['model'] == 'ENV') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DeviceDetailsScreen(device: device),
+            ),
+          );
+        } else if (device['model'] == 'SSM') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => solosenseScreen(device: device),
+            ),
+          );
+        }
       },
       onLongPress: () {
         showDialog(
@@ -591,9 +601,11 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Image.network(
-                device['image'],
-                fit: BoxFit.cover,
+              child: Center(
+                child: Image.network(
+                  device['image'],
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
