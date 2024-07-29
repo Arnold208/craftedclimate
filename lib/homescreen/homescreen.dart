@@ -144,8 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text(
           'Sense Platform',
           style: TextStyle(
+            fontFamily: 'Raleway',
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 65, 161, 70),
           ),
         ),
@@ -230,42 +231,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(bottom: 100.0),
                 child: Column(
                   children: [
-                    Container(
-                      height: 40,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _categories.map(_categoryChip).toList(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 4),
+                      child: Container(
+                        height: 40,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: _categories.map(_categoryChip).toList(),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          autoPlay: true,
-                          aspectRatio: 2.0,
-                          enlargeCenterPage: true,
-                          viewportFraction: 0.8,
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 4),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        items: imgList
-                            .map((item) => Container(
-                                  child: Center(
-                                    child: Image.network(item,
-                                        fit: BoxFit.cover, width: 1000),
-                                  ),
-                                ))
-                            .toList(),
+                        child: CarouselSlider(
+                          options: CarouselOptions(
+                            autoPlay: true,
+                            aspectRatio: 2.0,
+                            enlargeCenterPage: true,
+                            viewportFraction: 0.8,
+                          ),
+                          items: imgList
+                              .map((item) => Container(
+                                    child: Center(
+                                      child: Image.network(item,
+                                          fit: BoxFit.cover, width: 600),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -278,8 +287,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             'Devices',
                             style: TextStyle(
+                              fontFamily: 'Raleway',
                               fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w400,
                               color: Colors.black,
                             ),
                           ),
@@ -298,7 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 '$onlineCount online',
                                 style: const TextStyle(
                                   fontSize: 15,
-                                  color: Color.fromARGB(255, 29, 29, 29),
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w300,
+                                  color: Color.fromARGB(255, 0, 0, 0),
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -314,8 +326,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 '$offlineCount offline',
                                 style: const TextStyle(
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w300,
                                   fontSize: 15,
-                                  color: Color.fromARGB(255, 29, 29, 29),
+                                  color: Color.fromARGB(255, 0, 0, 0),
                                 ),
                               ),
                             ],
@@ -477,9 +491,15 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Add device via:",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                const Center(
+                  child: Text(
+                    "Add Device",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -491,7 +511,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         await _checkBluetoothPermission(context);
                       },
                       icon: const Icon(Icons.bluetooth),
-                      label: const Text("Bluetooth"),
+                      label: const Text(
+                        "Bluetooth",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.green,
@@ -508,7 +535,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         await _checkCameraPermission(context);
                       },
                       icon: const Icon(Icons.qr_code),
-                      label: const Text("QR Code"),
+                      label: const Text(
+                        "QR Code",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.green,
@@ -535,6 +569,8 @@ class _HomeScreenState extends State<HomeScreen> {
       label: Text(
         label,
         style: TextStyle(
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.w300,
             color: isSelected ? Colors.green : Color.fromARGB(255, 57, 57, 57),
             fontSize: 15),
       ),
@@ -616,13 +652,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     device['name'],
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w400,
                       fontSize: 16,
                     ),
                   ),
                   Text(
                     device['model'],
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -630,7 +672,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         device['status'],
-                        style: TextStyle(color: statusColor, fontSize: 12),
+                        style: TextStyle(
+                          color: statusColor,
+                          fontSize: 12,
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       Row(
                         children: [
@@ -641,7 +688,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Text(
                             '${device['battery']}%',
-                            style: TextStyle(color: batteryColor, fontSize: 12),
+                            style: TextStyle(
+                              color: batteryColor,
+                              fontSize: 12,
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
                         ],
                       ),
