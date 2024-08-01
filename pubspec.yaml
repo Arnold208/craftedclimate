@@ -45,6 +45,7 @@ dependencies:
   shared_preferences: ^2.2.1
   syncfusion_flutter_gauges: ^26.2.5
   #flutter_bluetooth_serial: ^0.4.0
+  awesome_notifications: ^0.9.3+1
  
 
 dev_dependencies:

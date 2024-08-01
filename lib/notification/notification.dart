@@ -12,7 +12,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications"),
+        title: const Text("Notifications",
+            style: TextStyle(
+              fontSize: 24,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w400,
+              color: Color.fromARGB(255, 65, 161, 70),
+            )),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert),
@@ -24,9 +30,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: const Center(
         child: Text(
-          "Notification coming up",
+          "Notification coming up !!",
           style: TextStyle(
             fontSize: 16,
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.w300,
             color: Colors.black,
           ),
         ),

@@ -80,7 +80,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         ),
         title: Text(widget.device['name'],
             style: const TextStyle(
-              fontSize: 28,
+              fontSize: 24,
               fontFamily: 'Raleway',
               fontWeight: FontWeight.w400,
               color: Color.fromARGB(255, 65, 161, 70),
