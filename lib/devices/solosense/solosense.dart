@@ -712,6 +712,11 @@ class _solosenseScreenState extends State<solosenseScreen> {
     );
   }
 
+  // Function to truncate text with ellipsis
+  String truncateWithEllipsis(int cutoff, String text) {
+    return (text.length <= cutoff) ? text : '${text.substring(0, cutoff)}...';
+  }
+
   Widget _buildInfoColumn(String label, String value,
       {IconData? icon, Color? statusColor}) {
     return Column(
@@ -720,10 +725,11 @@ class _solosenseScreenState extends State<solosenseScreen> {
         Text(
           label.toUpperCase(),
           style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'Raleway',
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 0, 0, 0)),
+            fontSize: 16,
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 0, 0),
+          ),
         ),
         const SizedBox(height: 4),
         Row(
@@ -732,23 +738,94 @@ class _solosenseScreenState extends State<solosenseScreen> {
             if (icon != null) ...[
               Icon(
                 icon,
-                color: statusColor ?? Color.fromARGB(255, 42, 125, 180),
+                color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
               ),
               const SizedBox(width: 4),
             ],
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w400,
-                color: statusColor ?? Colors.black,
+            GestureDetector(
+              onTap: () {
+                // Show a dialog with the full text when the text is tapped
+                _showFullTextDialog(context, value);
+              },
+              child: Text(
+                truncateWithEllipsis(10, value), // Truncated text
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                  color: statusColor ?? Colors.black,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
       ],
+    );
+  }
+
+// Function to show a dialog with the full text
+  void _showFullTextDialog(BuildContext context, String fullText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+              // Max width set to 80% of the screen width
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+              // Max height set to 30% of the screen height
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fullText,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -794,7 +871,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 5),
 
                       // Device AUID, location, and status row with placeholders and values underneath
                       Row(
@@ -806,7 +883,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                           ),
                           _buildInfoColumn(
                             'LOCATION',
-                            location['country'] + " - " + location['city'],
+                            truncateWithEllipsis(8, location['city']),
                             icon: Icons.public,
                           ),
                           _buildInfoColumn(
@@ -838,9 +915,8 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         child: Text(
                           timestamp ?? 'N/A',
                           style: const TextStyle(
-                              fontSize: 17,
-                              fontFamily: 'Raleway',
-                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
                               color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ),
@@ -850,7 +926,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         style: TextStyle(
                             fontSize: 20,
                             fontFamily: 'Raleway',
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 0, 0, 0)),
                       ),
 
@@ -877,7 +953,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         style: TextStyle(
                             fontSize: 20,
                             fontFamily: 'Raleway',
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       const SizedBox(height: 16),
@@ -888,7 +964,11 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         child: const Center(
                           child: Text(
                             'Graph or Chart Placeholder',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w300,
+                                color: Colors.grey),
                           ),
                         ),
                       ),
@@ -924,9 +1004,10 @@ class _solosenseScreenState extends State<solosenseScreen> {
         child: Text(
           title.toUpperCase(),
           style: const TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 16,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w300,
+              color: Colors.black),
         ),
       ),
     );

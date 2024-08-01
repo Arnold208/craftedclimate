@@ -17,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _agreeToPrivacyPolicy = false;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isPasswordVisible =
+      false; // State variable to track password visibility
 
   @override
   void dispose() {
@@ -102,12 +104,27 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: TextField(
                 controller: _passwordController,
+
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(
                     fontSize: 18,
                     fontFamily: 'Raleway',
                     fontWeight: FontWeight.w400,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible =
+                            !_isPasswordVisible; // Toggle visibility
+                      });
+                    },
                   ),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 240, 240, 240),
@@ -116,7 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                obscureText: true,
+                obscureText:
+                    !_isPasswordVisible, // Toggle this based on the state
                 textInputAction: TextInputAction.done,
               ),
             ),
