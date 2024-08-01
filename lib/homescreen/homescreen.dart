@@ -572,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w300,
             color: isSelected ? Colors.green : Color.fromARGB(255, 57, 57, 57),
-            fontSize: 15),
+            fontSize: 16),
       ),
       selected: isSelected,
       onSelected: (_) {

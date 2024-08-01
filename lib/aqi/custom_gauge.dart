@@ -52,7 +52,11 @@ class CustomGauge extends StatelessWidget {
                 widget: Container(
                   child: Text(
                     value.toStringAsFixed(2),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                 ),
                 angle: 90,

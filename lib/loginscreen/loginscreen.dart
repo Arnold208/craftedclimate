@@ -81,7 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(fontSize: 18),
+                  labelStyle: const TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w400,
+                  ),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 240, 240, 240),
                   border: OutlineInputBorder(
@@ -100,7 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(fontSize: 18),
+                  labelStyle: const TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w400,
+                  ),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 240, 240, 240),
                   border: OutlineInputBorder(
@@ -116,7 +124,11 @@ class _LoginScreenState extends State<LoginScreen> {
             CheckboxListTile(
               title: const Text(
                 "I have read and agree to Privacy Policy",
-                style: TextStyle(fontSize: 14, color: Colors.black),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black),
               ),
               value: _agreeToPrivacyPolicy,
               onChanged: (bool? value) {
@@ -151,9 +163,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     : const Text(
                         'Login',
                         style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                            fontSize: 18,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white),
                       ),
               ),
             ),
@@ -181,7 +194,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: const Text(
                   'Register',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -191,7 +208,11 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text(
                 'Forgot Password?',
-                style: TextStyle(fontSize: 15, color: Colors.black),
+                style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black),
               ),
             ),
           ],
