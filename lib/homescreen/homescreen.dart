@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/notification/notification_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,25 +10,6 @@ import 'package:craftedclimate/notification/notification.dart';
 import 'package:craftedclimate/qr_scan/qr_scan.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SenseCAP',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomeScreen(),
-    );
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _fetchCategories();
+    NotificationController.startListeningNotificationEvents();
   }
 
   Future<void> _fetchCategories() async {
@@ -195,7 +178,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            onPressed: () {
+            onPressed: () async {
+              // Create a notification
+              await NotificationController.createNewNotification();
+
+              // Navigate to the notification screen
               Navigator.push(
                 context,
                 MaterialPageRoute(

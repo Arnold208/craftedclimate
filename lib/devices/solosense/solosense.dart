@@ -842,7 +842,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
         title: Text(
           widget.device['name'],
           style: const TextStyle(
-            fontSize: 28,
+            fontSize: 24,
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 65, 161, 70),
@@ -1077,9 +1077,8 @@ class _solosenseScreenState extends State<solosenseScreen> {
             Text(
               '$value $unit',
               style: const TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Raleway',
-                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
                   color: Color.fromARGB(255, 0, 0, 0)),
               textAlign: TextAlign.center,
             ),
