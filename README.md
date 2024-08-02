@@ -1,6 +1,6 @@
-# Crafted Climate
+![Crafted Climate Logo](screenshots\cc_logo.png)
 
-Crafted Climate(Sense Platform Mobi) is a cutting-edge mobile application designed to provide real-time monitoring of air quality and IoT sensors. By leveraging the power of technology, this app aims to offer users a comprehensive view of environmental data, empowering them to track air quality metrics and manage connected IoT devices efficiently. Our mission is to craft a climate-friendly future with technology, making sustainability and environmental awareness accessible to everyone.
+[Crafted Climate](https://craftedclimate.org)(Sense Platform Mobi) is a cutting-edge mobile application designed to provide real-time monitoring of air quality and IoT sensors. By leveraging the power of technology, this app aims to offer users a comprehensive view of environmental data, empowering them to track air quality metrics and manage connected IoT devices efficiently. Our mission is to craft a climate-friendly future with technology, making sustainability and environmental awareness accessible to everyone.
 
 ## Project Vision
 
@@ -24,15 +24,11 @@ With Crafted Climate, we strive to enable communities, organizations, and indivi
 
 ## Screenshots
 
-![Home Screen](screenshots/Screenshot_20240802_024414_com.example.craftedclimate.jpg)
-
-### Notifications
-
-![Telemetry](screenshots/Screenshot_20240802_024433_com.example.craftedclimate.jpg)
-
-### Device Management
-
-![Device Management](screenshots/Screenshot_20240802_024443_com.example.craftedclimate.jpg)
+<p align="center">
+  <img src="screenshots/Screenshot_20240802_024414_com.example.craftedclimate.jpg" alt="Home Screen" width="200"/>
+  <img src="screenshots/Screenshot_20240802_024433_com.example.craftedclimate.jpg" alt="Notifications" width="200"/>
+  <img src="screenshots/Screenshot_20240802_024443_com.example.craftedclimate.jpg" alt="Device Management" width="200"/>
+</p>
 
 ## Installation
 
