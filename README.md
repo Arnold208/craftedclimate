@@ -1,5 +1,4 @@
-![Crafted Climate Logo](screenshots\cc_logo.jpg)
-
+<img src="screenshots/cc_logo.jpg" alt="Home Screen" width="800"/>
 [Crafted Climate](https://craftedclimate.org)(Sense Platform Mobi) is a cutting-edge mobile application designed to provide real-time monitoring of air quality and IoT sensors. By leveraging the power of technology, this app aims to offer users a comprehensive view of environmental data, empowering them to track air quality metrics and manage connected IoT devices efficiently. Our mission is to craft a climate-friendly future with technology, making sustainability and environmental awareness accessible to everyone.
 
 ## Project Vision
