@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
+import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
+import 'package:craftedclimate/sideMenu/map/mapscreen.dart';
+import 'package:craftedclimate/sideMenu/organization/organizationscreen.dart';
+import 'package:craftedclimate/sideMenu/settings/settingscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -367,7 +371,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Deploymentscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -394,14 +404,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Organizationscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.event),
+                                Icon(Icons.business),
                                 SizedBox(height: 2),
-                                Text("Events",
+                                Text("Org",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 10,
@@ -421,15 +437,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Mapscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.person),
+                                Icon(Icons.map),
                                 SizedBox(height: 2),
                                 Text(
-                                  "Profile",
+                                  "Maps",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 10,
@@ -450,7 +471,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Settingscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
