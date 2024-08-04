@@ -25,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
   bool _isMenuVisible = false;
+  final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
   List<String> _categories = ['All'];
   List<Map<String, dynamic>> _allDevices = [];
   List<Map<String, dynamic>> _filteredDevices = [];
@@ -47,8 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final userId = prefs.getString('userId');
 
     if (userId != null) {
-      final url =
-          'https://cctelemetry-dev.azurewebsites.net/users/$userId/deployments';
+      final url = '$baseUrl/users/$userId/deployments';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
@@ -59,8 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         for (var deployment in deployments) {
           for (var deviceId in deployment['devices']) {
-            final deviceUrl =
-                'https://cctelemetry-dev.azurewebsites.net/find-registered-device/$deviceId';
+            final deviceUrl = '$baseUrl/find-registered-device/$deviceId';
             final deviceResponse = await http.get(Uri.parse(deviceUrl));
 
             if (deviceResponse.statusCode == 200) {

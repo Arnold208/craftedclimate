@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:craftedclimate/homescreen/homescreen.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _agreeToPrivacyPolicy = false;
   bool _isLoading = false;
+  final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
+
   String? _errorMessage;
   bool _isPasswordVisible =
       false; // State variable to track password visibility
@@ -34,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     final response = await http.post(
-      Uri.parse('https://cctelemetry-dev.azurewebsites.net/login'),
+      Uri.parse('$baseUrl/login'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },

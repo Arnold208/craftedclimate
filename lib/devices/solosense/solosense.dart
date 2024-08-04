@@ -17,6 +17,8 @@ class _solosenseScreenState extends State<solosenseScreen> {
   Map<String, dynamic>? dataPoints;
   String? timestamp;
   bool isLoading = true;
+  final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
+
   final Map<String, dynamic> _datapoints = {
     "Temperature": Icons.thermostat,
     "Pressure": Icons.speed,
@@ -286,7 +288,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _frequencyController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Frequency (min 15)',
                           border: OutlineInputBorder(),
                         ),
@@ -561,7 +563,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
 
     if (userId != null) {
       final url =
-          'https://cctelemetry-dev.azurewebsites.net/telemetry-user/${widget.device['deviceId']}?userid=$userId&limit=1';
+          '$baseUrl/telemetry-user/${widget.device['deviceId']}?userid=$userId&limit=1';
       try {
         final response = await http.get(Uri.parse(url));
 
@@ -601,7 +603,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
 
     final jsonBody = _formatToJson();
     final response = await http.post(
-      Uri.parse('https://cctelemetry-dev.azurewebsites.net/solo-config'),
+      Uri.parse('$baseUrl/solo-config'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:craftedclimate/aqi/aqi_gauge.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,9 @@ class DeviceDetailsScreen extends StatefulWidget {
 class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
   Map<String, dynamic>? dataPoints;
   String? timestamp;
+
   bool isLoading = true;
+  final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
 
   @override
   void initState() {
@@ -34,7 +37,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
 
     if (userId != null) {
       final url =
-          'https://cctelemetry-dev.azurewebsites.net/telemetry-user/${widget.device['deviceId']}?userid=$userId&limit=1';
+          '$baseUrl/telemetry-user/${widget.device['deviceId']}?userid=$userId&limit=1';
       try {
         final response = await http.get(Uri.parse(url));
 
