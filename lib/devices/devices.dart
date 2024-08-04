@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DeviceDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const DeviceDetailsScreen({required this.device, super.key});
+  const DeviceDetailsScreen({required this.device, Key? key}) : super(key: key);
 
   @override
   _DeviceDetailsScreenState createState() => _DeviceDetailsScreenState();
@@ -78,14 +78,13 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          widget.device['name'],
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 65, 161, 70),
-          ),
-        ),
+        title: Text(widget.device['name'],
+            style: const TextStyle(
+              fontSize: 24,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w400,
+              color: Color.fromARGB(255, 65, 161, 70),
+            )),
         centerTitle: true,
         actions: [
           IconButton(
@@ -111,7 +110,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 1),
 
                       // Device AUID, location, and status row with placeholders and values underneath
                       Row(
@@ -123,7 +122,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                           ),
                           _buildInfoColumn(
                             'LOCATION',
-                            location['country'] + " - " + location['city'],
+                            truncateWithEllipsis(8, location['city']),
                             icon: Icons.public,
                           ),
                           _buildInfoColumn(
@@ -145,57 +144,117 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                           child: AQIGauge(
                               aqi: (dataPoints!['aqi'] as num).toDouble()),
                         ),
+                      Center(
+                        child: Text(
+                          timestamp ?? 'N/A',
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
+                              color: Color.fromARGB(255, 0, 0, 0)),
+                        ),
+                      ),
                       const SizedBox(height: 16),
-
                       const Text(
                         'TELEMETRY',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       const SizedBox(height: 16),
                       if (dataPoints != null) ...[
-                        // First 4 Environment metrics cards
-                        Wrap(
-                          spacing: 42.0,
-                          runSpacing: 16.0,
-                          children: _buildMetricCards(dataPoints!, limit: 4),
+                        // First 4 Environment metrics cards using GridView
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, // Two cards per row
+                            mainAxisSpacing: 16.0,
+                            crossAxisSpacing: 16.0,
+                            childAspectRatio: 1.0, // Aspect ratio of each card
+                          ),
+                          itemCount: dataPoints!.length
+                              .clamp(0, 4), // Limit to the first 4 items
+                          itemBuilder: (context, index) {
+                            final key = dataPoints!.keys.elementAt(index);
+                            final value = dataPoints![key];
+
+                            // Skip these fields
+                            if (key == 'auid' || key == 'date') {
+                              return const SizedBox.shrink();
+                            }
+
+                            return _buildMetricCard(
+                              _formatMetricName(key),
+                              _formatMetricValue(value),
+                              _getMetricIcon(key),
+                            );
+                          },
                         ),
-                        const SizedBox(height: 16),
                         // Expansion tile for more data
                         if (dataPoints!.length > 4)
-                          ExpansionTile(
-                            title: const Text(
-                              'More Data',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            children: [
-                              Wrap(
-                                spacing: 16.0,
-                                runSpacing: 16.0,
-                                children:
-                                    _buildMetricCards(dataPoints!, skip: 4),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                            child: ExpansionTile(
+                              tilePadding: EdgeInsets.zero,
+                              expandedCrossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              childrenPadding:
+                                  const EdgeInsets.symmetric(vertical: 0),
+                              title: const Text(
+                                'More Data',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Raleway',
+                                    fontWeight: FontWeight.w400,
+                                    color: Color.fromARGB(255, 0, 0, 0)),
                               ),
-                            ],
+                              children: [
+                                // Correctly use GridView to avoid large space
+                                GridView.builder(
+                                  shrinkWrap: true,
+                                  padding:
+                                      const EdgeInsets.all(0), // Remove padding
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2, // Two cards per row
+                                    mainAxisSpacing: 16.0,
+                                    crossAxisSpacing: 16.0,
+                                    childAspectRatio:
+                                        1.0, // Aspect ratio of each card
+                                  ),
+                                  itemCount: dataPoints!.length - 4,
+                                  itemBuilder: (context, index) {
+                                    final key =
+                                        dataPoints!.keys.elementAt(index + 4);
+                                    final value = dataPoints![key];
+
+                                    if (key == 'auid' || key == 'date') {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    return _buildMetricCard(
+                                      _formatMetricName(key),
+                                      _formatMetricValue(value),
+                                      _getMetricIcon(key),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        const SizedBox(height: 16),
-                        // Timestamp
-                        Center(
-                          child: Text(
-                            timestamp ?? 'N/A',
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.grey),
-                          ),
-                        ),
                       ] else ...[
                         const Center(
                           child: Text(
                             'No telemetry from sensor',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w400,
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ),
                       ],
@@ -205,7 +264,9 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         'HISTORY',
                         style: TextStyle(
                             fontSize: 20,
+                            fontFamily: 'Raleway',
                             fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0),
                             letterSpacing: 1.5),
                       ),
                       const SizedBox(height: 16),
@@ -216,7 +277,11 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         child: const Center(
                           child: Text(
                             'Graph or Chart Placeholder',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w300,
+                                color: Colors.grey),
                           ),
                         ),
                       ),
@@ -236,25 +301,6 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
               ),
             ),
     );
-  }
-
-  List<Widget> _buildMetricCards(Map<String, dynamic> data,
-      {int limit = 0, int skip = 0}) {
-    List<Widget> cards = [];
-    int index = 0;
-    data.forEach((key, value) {
-      if (key != 'auid' && key != 'date') {
-        if (skip > 0 && index < skip) {
-          index++;
-          return;
-        }
-        if (limit > 0 && index >= skip + limit) return;
-        cards.add(_buildMetricCard(_formatMetricName(key),
-            _formatMetricValue(value), _getMetricIcon(key)));
-        index++;
-      }
-    });
-    return cards;
   }
 
   String _formatMetricName(String key) {
@@ -322,6 +368,11 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
     }
   }
 
+  // Function to truncate text with ellipsis
+  String truncateWithEllipsis(int cutoff, String text) {
+    return (text.length <= cutoff) ? text : '${text.substring(0, cutoff)}...';
+  }
+
   Widget _buildInfoColumn(String label, String value,
       {IconData? icon, Color? statusColor}) {
     return Column(
@@ -331,8 +382,9 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
           label.toUpperCase(),
           style: const TextStyle(
             fontSize: 14,
+            fontFamily: 'Raleway',
             fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         const SizedBox(height: 4),
@@ -346,18 +398,90 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
               ),
               const SizedBox(width: 4),
             ],
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: statusColor ?? Colors.black,
+            GestureDetector(
+              onTap: () {
+                // Show a dialog with the full text when the text is tapped
+                _showFullTextDialog(context, value);
+              },
+              child: Text(
+                truncateWithEllipsis(10, value), // Truncated text
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                  color: statusColor ?? Colors.black,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
       ],
+    );
+  }
+
+// Function to show a dialog with the full text
+  void _showFullTextDialog(BuildContext context, String fullText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+              // Max width set to 80% of the screen width
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+              // Max height set to 30% of the screen height
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fullText,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -368,7 +492,6 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
       ),
       elevation: 4,
       child: Container(
-        width: 160,
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -378,17 +501,18 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 14,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               value,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                fontWeight: FontWeight.w300,
               ),
               textAlign: TextAlign.center,
             ),
@@ -412,9 +536,10 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         child: Text(
           title.toUpperCase(),
           style: const TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 16,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w300,
+              color: Colors.black),
         ),
       ),
     );

@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/notification/notification_controller.dart';
+import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
+import 'package:craftedclimate/sideMenu/map/mapscreen.dart';
+import 'package:craftedclimate/sideMenu/organization/organizationscreen.dart';
+import 'package:craftedclimate/sideMenu/settings/settingscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,25 +14,6 @@ import 'package:craftedclimate/notification/notification.dart';
 import 'package:craftedclimate/qr_scan/qr_scan.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SenseCAP',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomeScreen(),
-    );
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _fetchCategories();
+    NotificationController.startListeningNotificationEvents();
   }
 
   Future<void> _fetchCategories() async {
@@ -195,7 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            onPressed: () {
+            onPressed: () async {
+              // Create a notification
+              await NotificationController.createNewNotification();
+
+              // Navigate to the notification screen
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -234,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 4),
-                      child: SizedBox(
+                      child: Container(
                         height: 40,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
@@ -373,84 +364,134 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         SizedBox(
-                          width: 70,
-                          height: 70,
+                          width: 60,
+                          height: 60,
                           child: FloatingActionButton(
                             heroTag: "btn1",
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Deploymentscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.device_hub),
                                 SizedBox(height: 2),
-                                Text("Hub", textAlign: TextAlign.center),
+                                Text("Deploy",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: 'Raleway',
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white)),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 20),
                         SizedBox(
-                          width: 70,
-                          height: 70,
+                          width: 60,
+                          height: 60,
                           child: FloatingActionButton(
                             heroTag: "btn2",
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Organizationscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.event),
+                                Icon(Icons.business),
                                 SizedBox(height: 2),
-                                Text("Events", textAlign: TextAlign.center),
+                                Text("Org",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: 'Raleway',
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white)),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 20),
                         SizedBox(
-                          width: 70,
-                          height: 70,
+                          width: 60,
+                          height: 60,
                           child: FloatingActionButton(
                             heroTag: "btn3",
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Mapscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.person),
+                                Icon(Icons.map),
                                 SizedBox(height: 2),
-                                Text("Profile", textAlign: TextAlign.center),
+                                Text(
+                                  "Maps",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 20),
                         SizedBox(
-                          width: 70,
-                          height: 70,
+                          width: 60,
+                          height: 60,
                           child: FloatingActionButton(
                             heroTag: "btn4",
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             onPressed: () {
-                              // Handle scan QR code action
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Settingscreen()),
+                              );
                             },
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.settings),
                                 SizedBox(height: 2),
-                                Text("Settings", textAlign: TextAlign.center),
+                                Text(
+                                  "Settings",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
@@ -487,75 +528,90 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text(
-                    "Add Device",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+                  // This constrains the dialog width to 90% of the screen width
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  // This constrains the dialog height to 80% of the screen height
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await _checkBluetoothPermission(context);
-                      },
-                      icon: const Icon(Icons.bluetooth),
-                      label: const Text(
-                        "Bluetooth",
+                    const Center(
+                      child: Text(
+                        "Add Device",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           fontFamily: 'Raleway',
                           fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await _checkCameraPermission(context);
-                      },
-                      icon: const Icon(Icons.qr_code),
-                      label: const Text(
-                        "QR Code",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontFamily: 'Raleway',
-                          fontWeight: FontWeight.w400,
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Flexible(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _checkBluetoothPermission(context);
+                            },
+                            icon: const Icon(Icons.bluetooth),
+                            label: const Text(
+                              "Bluetooth",
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _checkCameraPermission(context);
+                            },
+                            icon: const Icon(Icons.qr_code),
+                            label: const Text(
+                              "QR Code",
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -571,8 +627,8 @@ class _HomeScreenState extends State<HomeScreen> {
         style: TextStyle(
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w300,
-            color: isSelected ? Colors.green : const Color.fromARGB(255, 57, 57, 57),
-            fontSize: 15),
+            color: isSelected ? Colors.green : Color.fromARGB(255, 57, 57, 57),
+            fontSize: 16),
       ),
       selected: isSelected,
       onSelected: (_) {

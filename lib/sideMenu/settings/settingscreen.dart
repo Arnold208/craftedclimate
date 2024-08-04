@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
+class Settingscreen extends StatefulWidget {
+  const Settingscreen({super.key});
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  State<Settingscreen> createState() => _SettingscreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _SettingscreenState extends State<Settingscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Notifications",
+          "Settings",
           style: TextStyle(
             fontSize: 24,
             fontFamily: 'Raleway',
@@ -35,13 +35,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.notifications,
+              Icons.settings,
               size: 80, // Large icon size for emphasis
               color: Color.fromARGB(255, 3, 55, 132),
             ),
             SizedBox(height: 20), // Spacing between icon and text
             Text(
-              "Notification coming up",
+              "Edit and Configure your App",
               style: TextStyle(
                 fontSize: 18,
                 fontFamily: 'Raleway',

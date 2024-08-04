@@ -9,17 +9,17 @@ class CustomGauge extends StatelessWidget {
   final double height;
 
   const CustomGauge({
-    super.key,
+    Key? key,
     required this.value,
     required this.minValue,
     required this.maxValue,
     required this.width,
     required this.height,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: width,
       height: height,
       child: SfRadialGauge(
@@ -52,7 +52,11 @@ class CustomGauge extends StatelessWidget {
                 widget: Container(
                   child: Text(
                     value.toStringAsFixed(2),
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                 ),
                 angle: 90,

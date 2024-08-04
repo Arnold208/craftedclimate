@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
+class Deploymentscreen extends StatefulWidget {
+  const Deploymentscreen({super.key});
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  State<Deploymentscreen> createState() => _DeploymentscreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _DeploymentscreenState extends State<Deploymentscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Notifications",
+          "Deployments",
           style: TextStyle(
             fontSize: 24,
             fontFamily: 'Raleway',
@@ -35,13 +35,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.notifications,
-              size: 80, // Large icon size for emphasis
+              Icons.device_hub,
+              size: 80, // Make the icon large to stand out
               color: Color.fromARGB(255, 3, 55, 132),
             ),
-            SizedBox(height: 20), // Spacing between icon and text
+            SizedBox(height: 20), // Add spacing between the icon and text
             Text(
-              "Notification coming up",
+              "Create and Edit Deployments",
               style: TextStyle(
                 fontSize: 18,
                 fontFamily: 'Raleway',

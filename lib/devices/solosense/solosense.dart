@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class solosenseScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const solosenseScreen({required this.device, super.key});
+  const solosenseScreen({required this.device, Key? key}) : super(key: key);
 
   @override
   State<solosenseScreen> createState() => _solosenseScreenState();
@@ -132,8 +132,8 @@ class _solosenseScreenState extends State<solosenseScreen> {
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5),
             ),
           ),
           child: Column(
@@ -183,7 +183,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
   }
 
   void _showConfigureSensorDialog() {
-    Set<String> selectedDatapointsForConfigureDialog = {
+    Set<String> _selectedDatapointsForConfigureDialog = {
       ..._selectedDatapoints
     };
     showDialog(
@@ -192,9 +192,65 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text('Configure Sensor'),
+              title: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Configure Sensor',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.info_outline, color: Colors.green),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text(
+                              'Configure Sensor Information',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w400,
+                                  color: Color.fromARGB(255, 0, 0, 0)),
+                            ),
+                            content: const Text(
+                              'Here you can configure the sensor by selecting up to 6 datapoints and setting the frequency.',
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w300,
+                                  color: Color.fromARGB(255, 0, 0, 0)),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text(
+                                  'Close',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w300,
+                                      color: Color.fromARGB(255, 0, 0, 0)),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
               content: SingleChildScrollView(
-                child: SizedBox(
+                child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -208,29 +264,29 @@ class _solosenseScreenState extends State<solosenseScreen> {
                               Expanded(child: Text(key)),
                             ],
                           ),
-                          value: selectedDatapointsForConfigureDialog
+                          value: _selectedDatapointsForConfigureDialog
                               .contains(key),
                           onChanged: (bool? value) {
                             if (value == true &&
-                                selectedDatapointsForConfigureDialog.length >=
-                                    6) {
+                                _selectedDatapointsForConfigureDialog.length >=
+                                    7) {
                               return; // Prevent checking more than 6 boxes
                             }
                             setState(() {
                               if (value == true) {
-                                selectedDatapointsForConfigureDialog.add(key);
+                                _selectedDatapointsForConfigureDialog.add(key);
                               } else {
-                                selectedDatapointsForConfigureDialog
+                                _selectedDatapointsForConfigureDialog
                                     .remove(key);
                               }
                             });
                           },
                         );
-                      }),
+                      }).toList(),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _frequencyController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Frequency (min 15)',
                           border: OutlineInputBorder(),
                         ),
@@ -252,18 +308,32 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Close'),
+                  child: const Text(
+                    'Close',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromARGB(255, 0, 0, 0)),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Save'),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w300,
+                        color: Color.fromARGB(255, 0, 0, 0)),
+                  ),
                   onPressed: () {
                     setState(() {
                       _selectedDatapoints
                         ..clear()
-                        ..addAll(selectedDatapointsForConfigureDialog);
+                        ..addAll(_selectedDatapointsForConfigureDialog);
                       // Ensure 'n' and 'o' are always included
                       _selectedDatapoints.addAll(['Constant n', 'Constant o']);
                     });
@@ -287,9 +357,67 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text('Select Datapoint'),
+              title: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Select Datapoint',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.info_outline, color: Colors.green),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text(
+                              'Select Datapoint Information',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w400,
+                                  color: Color.fromARGB(255, 0, 0, 0)),
+                            ),
+                            content: const Text(
+                              'Here you can select which datapoints you want to monitor. '
+                              'and analyse.',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w300,
+                                  color: Color.fromARGB(255, 0, 0, 0)),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text(
+                                  'Close',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w300,
+                                      color: Color.fromARGB(255, 0, 0, 0)),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
               content: SingleChildScrollView(
-                child: SizedBox(
+                child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -338,7 +466,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Close'),
+                  child: Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -364,13 +492,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text('Edit Datapoint'),
+              title: Text('Edit Datapoint'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<IconData>(
-                      decoration: const InputDecoration(labelText: 'Select Icon'),
+                      decoration: InputDecoration(labelText: 'Select Icon'),
                       value: selectedIcon,
                       items: _datapoints.values.map((iconData) {
                         return DropdownMenuItem<IconData>(
@@ -387,7 +515,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: unitController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Unit',
                         border: OutlineInputBorder(),
                       ),
@@ -397,13 +525,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Close'),
+                  child: Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Save'),
+                  child: Text('Save'),
                   onPressed: () {
                     setState(() {
                       _editableDataPoints[key] = {
@@ -504,13 +632,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
               const Text('Are you sure you want to save settings on sensor?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('No'),
+              child: Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text('Yes'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _saveSettings();
@@ -531,7 +659,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -572,9 +700,21 @@ class _solosenseScreenState extends State<solosenseScreen> {
         backgroundColor: iconColor.withOpacity(0.1),
         child: Icon(icon, color: iconColor),
       ),
-      title: Text(text),
+      title: Text(
+        text,
+        style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.w400,
+            color: Color.fromARGB(255, 0, 0, 0)),
+      ),
       onTap: onTap,
     );
+  }
+
+  // Function to truncate text with ellipsis
+  String truncateWithEllipsis(int cutoff, String text) {
+    return (text.length <= cutoff) ? text : '${text.substring(0, cutoff)}...';
   }
 
   Widget _buildInfoColumn(String label, String value,
@@ -585,9 +725,10 @@ class _solosenseScreenState extends State<solosenseScreen> {
         Text(
           label.toUpperCase(),
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
+            fontFamily: 'Raleway',
             fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         const SizedBox(height: 4),
@@ -601,18 +742,90 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               const SizedBox(width: 4),
             ],
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: statusColor ?? Colors.black,
+            GestureDetector(
+              onTap: () {
+                // Show a dialog with the full text when the text is tapped
+                _showFullTextDialog(context, value);
+              },
+              child: Text(
+                truncateWithEllipsis(10, value), // Truncated text
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                  color: statusColor ?? Colors.black,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
       ],
+    );
+  }
+
+// Function to show a dialog with the full text
+  void _showFullTextDialog(BuildContext context, String fullText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+              // Max width set to 80% of the screen width
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+              // Max height set to 30% of the screen height
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fullText,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -629,7 +842,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
         title: Text(
           widget.device['name'],
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 24,
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 65, 161, 70),
@@ -658,7 +871,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 5),
 
                       // Device AUID, location, and status row with placeholders and values underneath
                       Row(
@@ -670,7 +883,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                           ),
                           _buildInfoColumn(
                             'LOCATION',
-                            location['country'] + " - " + location['city'],
+                            truncateWithEllipsis(8, location['city']),
                             icon: Icons.public,
                           ),
                           _buildInfoColumn(
@@ -702,15 +915,19 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         child: Text(
                           timestamp ?? 'N/A',
                           style: const TextStyle(
-                              fontSize: 16,
-                              color: Color.fromARGB(255, 37, 37, 37)),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
+                              color: Color.fromARGB(255, 0, 0, 0)),
                         ),
                       ),
                       const SizedBox(height: 16),
                       const Text(
                         'TELEMETRY',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0)),
                       ),
 
                       const SizedBox(height: 16),
@@ -722,10 +939,10 @@ class _solosenseScreenState extends State<solosenseScreen> {
                           child: Text(
                             'No telemetry from sensor',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
+                                fontSize: 20,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w400,
+                                color: Color.fromARGB(255, 255, 0, 0)),
                           ),
                         ),
 
@@ -735,8 +952,9 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         'HISTORY',
                         style: TextStyle(
                             fontSize: 20,
+                            fontFamily: 'Raleway',
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5),
+                            color: Color.fromARGB(255, 0, 0, 0)),
                       ),
                       const SizedBox(height: 16),
                       // Mock graph or chart
@@ -746,7 +964,11 @@ class _solosenseScreenState extends State<solosenseScreen> {
                         child: const Center(
                           child: Text(
                             'Graph or Chart Placeholder',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w300,
+                                color: Colors.grey),
                           ),
                         ),
                       ),
@@ -782,9 +1004,10 @@ class _solosenseScreenState extends State<solosenseScreen> {
         child: Text(
           title.toUpperCase(),
           style: const TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 16,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w300,
+              color: Colors.black),
         ),
       ),
     );
@@ -844,18 +1067,19 @@ class _solosenseScreenState extends State<solosenseScreen> {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 16,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.w400,
+                  color: Color.fromARGB(255, 0, 0, 0)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               '$value $unit',
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                  color: Color.fromARGB(255, 0, 0, 0)),
               textAlign: TextAlign.center,
             ),
           ],
