@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class solosenseScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const solosenseScreen({required this.device, Key? key}) : super(key: key);
+  const solosenseScreen({required this.device, super.key});
 
   @override
   State<solosenseScreen> createState() => _solosenseScreenState();
@@ -183,7 +183,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
   }
 
   void _showConfigureSensorDialog() {
-    Set<String> _selectedDatapointsForConfigureDialog = {
+    Set<String> selectedDatapointsForConfigureDialog = {
       ..._selectedDatapoints
     };
     showDialog(
@@ -192,9 +192,9 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Configure Sensor'),
+              title: const Text('Configure Sensor'),
               content: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -208,29 +208,29 @@ class _solosenseScreenState extends State<solosenseScreen> {
                               Expanded(child: Text(key)),
                             ],
                           ),
-                          value: _selectedDatapointsForConfigureDialog
+                          value: selectedDatapointsForConfigureDialog
                               .contains(key),
                           onChanged: (bool? value) {
                             if (value == true &&
-                                _selectedDatapointsForConfigureDialog.length >=
+                                selectedDatapointsForConfigureDialog.length >=
                                     6) {
                               return; // Prevent checking more than 6 boxes
                             }
                             setState(() {
                               if (value == true) {
-                                _selectedDatapointsForConfigureDialog.add(key);
+                                selectedDatapointsForConfigureDialog.add(key);
                               } else {
-                                _selectedDatapointsForConfigureDialog
+                                selectedDatapointsForConfigureDialog
                                     .remove(key);
                               }
                             });
                           },
                         );
-                      }).toList(),
+                      }),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _frequencyController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Frequency (min 15)',
                           border: OutlineInputBorder(),
                         ),
@@ -252,18 +252,18 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Close'),
+                  child: const Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     setState(() {
                       _selectedDatapoints
                         ..clear()
-                        ..addAll(_selectedDatapointsForConfigureDialog);
+                        ..addAll(selectedDatapointsForConfigureDialog);
                       // Ensure 'n' and 'o' are always included
                       _selectedDatapoints.addAll(['Constant n', 'Constant o']);
                     });
@@ -287,9 +287,9 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Select Datapoint'),
+              title: const Text('Select Datapoint'),
               content: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -338,7 +338,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Close'),
+                  child: const Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -364,13 +364,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Edit Datapoint'),
+              title: const Text('Edit Datapoint'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<IconData>(
-                      decoration: InputDecoration(labelText: 'Select Icon'),
+                      decoration: const InputDecoration(labelText: 'Select Icon'),
                       value: selectedIcon,
                       items: _datapoints.values.map((iconData) {
                         return DropdownMenuItem<IconData>(
@@ -387,7 +387,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: unitController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Unit',
                         border: OutlineInputBorder(),
                       ),
@@ -397,13 +397,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Close'),
+                  child: const Text('Close'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     setState(() {
                       _editableDataPoints[key] = {
@@ -504,13 +504,13 @@ class _solosenseScreenState extends State<solosenseScreen> {
               const Text('Are you sure you want to save settings on sensor?'),
           actions: <Widget>[
             TextButton(
-              child: Text('No'),
+              child: const Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Yes'),
+              child: const Text('Yes'),
               onPressed: () {
                 Navigator.of(context).pop();
                 _saveSettings();
@@ -531,7 +531,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -597,7 +597,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
             if (icon != null) ...[
               Icon(
                 icon,
-                color: statusColor ?? Color.fromARGB(255, 42, 125, 180),
+                color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
               ),
               const SizedBox(width: 4),
             ],
@@ -718,7 +718,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                       if (dataPoints != null)
                         _buildMetricGrid()
                       else
-                        Center(
+                        const Center(
                           child: Text(
                             'No telemetry from sensor',
                             style: TextStyle(
@@ -731,7 +731,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
 
                       const SizedBox(height: 16),
                       // History title
-                      Text(
+                      const Text(
                         'HISTORY',
                         style: TextStyle(
                             fontSize: 20,

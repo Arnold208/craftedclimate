@@ -234,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 4),
-                      child: Container(
+                      child: SizedBox(
                         height: 40,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
@@ -571,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
         style: TextStyle(
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w300,
-            color: isSelected ? Colors.green : Color.fromARGB(255, 57, 57, 57),
+            color: isSelected ? Colors.green : const Color.fromARGB(255, 57, 57, 57),
             fontSize: 15),
       ),
       selected: isSelected,

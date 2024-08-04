@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DeviceDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const DeviceDetailsScreen({required this.device, Key? key}) : super(key: key);
+  const DeviceDetailsScreen({required this.device, super.key});
 
   @override
   _DeviceDetailsScreenState createState() => _DeviceDetailsScreenState();
@@ -75,12 +75,12 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.device['name'],
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 65, 161, 70),
@@ -89,7 +89,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               // Navigate to settings or handle settings action
             },
@@ -97,7 +97,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         ],
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.green,
               ),
@@ -147,7 +147,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         ),
                       const SizedBox(height: 16),
 
-                      Text(
+                      const Text(
                         'TELEMETRY',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
@@ -164,7 +164,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                         // Expansion tile for more data
                         if (dataPoints!.length > 4)
                           ExpansionTile(
-                            title: Text(
+                            title: const Text(
                               'More Data',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
@@ -201,7 +201,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       ],
                       const SizedBox(height: 16),
                       // History title
-                      Text(
+                      const Text(
                         'HISTORY',
                         style: TextStyle(
                             fontSize: 20,
@@ -213,7 +213,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       Container(
                         height: 200,
                         color: Colors.grey[200],
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'Graph or Chart Placeholder',
                             style: TextStyle(color: Colors.grey),
@@ -329,7 +329,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
       children: [
         Text(
           label.toUpperCase(),
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.grey,
@@ -342,7 +342,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             if (icon != null) ...[
               Icon(
                 icon,
-                color: statusColor ?? Color.fromARGB(255, 42, 125, 180),
+                color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
               ),
               const SizedBox(width: 4),
             ],
@@ -377,7 +377,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -386,7 +386,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -411,7 +411,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         ),
         child: Text(
           title.toUpperCase(),
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.green,
             fontWeight: FontWeight.bold,
           ),
