@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:craftedclimate/aqi/aqi_gauge.dart';
+import 'package:craftedclimate/graph/custom_graph.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -76,7 +76,9 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
     final Map<String, dynamic> location = jsonDecode(widget.device['location']);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -86,7 +88,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
               fontSize: 24,
               fontFamily: 'Raleway',
               fontWeight: FontWeight.w400,
-              color: Color.fromARGB(255, 65, 161, 70),
+              color: Colors.green,
             )),
         centerTitle: true,
         actions: [
@@ -116,30 +118,49 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       const SizedBox(height: 1),
 
                       // Device AUID, location, and status row with placeholders and values underneath
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildInfoColumn(
-                            'AUID',
-                            widget.device['deviceId'],
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.green, // Green border color
+                            width: 2, // Border width
                           ),
-                          _buildInfoColumn(
-                            'LOCATION',
-                            truncateWithEllipsis(8, location['city']),
-                            icon: Icons.public,
-                          ),
-                          _buildInfoColumn(
-                            'STATUS',
-                            widget.device['status'],
-                            statusColor: widget.device['status'] == 'online'
-                                ? Colors.green
-                                : Colors.red,
-                            icon: widget.device['status'] == 'online'
-                                ? Icons.check_circle
-                                : Icons.error,
-                          ),
-                        ],
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        padding: const EdgeInsets.all(
+                            8), // Padding inside the container
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn(
+                              'AUID',
+                              widget.device['deviceId'],
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                            _buildInfoColumn(
+                              'LOCATION',
+                              truncateWithEllipsis(8, location['city']),
+                              icon: Icons.public,
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                            _buildInfoColumn(
+                              'STATUS',
+                              widget.device['status'],
+                              statusColor: widget.device['status'] == 'online'
+                                  ? Colors.green
+                                  : Colors.red,
+                              icon: widget.device['status'] == 'online'
+                                  ? Icons.check_circle
+                                  : Icons.error,
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                          ],
+                        ),
                       ),
+
                       const SizedBox(height: 20),
                       // AQI Gauge
                       if (dataPoints != null && dataPoints!['aqi'] != null)
@@ -160,7 +181,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       const Text(
                         'TELEMETRY',
                         style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 16,
                             fontFamily: 'Raleway',
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 0, 0, 0)),
@@ -266,38 +287,24 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                       const Text(
                         'HISTORY',
                         style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 16,
                             fontFamily: 'Raleway',
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 0, 0, 0),
                             letterSpacing: 1.5),
                       ),
                       const SizedBox(height: 16),
-                      // Mock graph or chart
-                      Container(
-                        height: 200,
-                        color: Colors.grey[200],
-                        child: const Center(
-                          child: Text(
-                            'Graph or Chart Placeholder',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Raleway',
-                                fontWeight: FontWeight.w300,
-                                color: Colors.grey),
-                          ),
+                      // Graph Integration
+                      // Use SizedBox to give the graph a specific height
+                      SizedBox(
+                        height: 400,
+                        // width: 600, // Adjust the height as needed
+                        child: SensorGraphWidget(
+                          auid: widget.device['deviceId'],
+                          base: "https://cctelemetry-dev.azurewebsites.net/",
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      // Day, Week, Month tabs
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildTab('Day'),
-                          _buildTab('Week'),
-                          _buildTab('Month'),
-                        ],
-                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -377,48 +384,53 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
   }
 
   Widget _buildInfoColumn(String label, String value,
-      {IconData? icon, Color? statusColor}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Raleway',
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 0, 0, 0),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
-              ),
-              const SizedBox(width: 4),
-            ],
-            GestureDetector(
-              onTap: () {
-                // Show a dialog with the full text when the text is tapped
-                _showFullTextDialog(context, value);
-              },
-              child: Text(
-                truncateWithEllipsis(10, value), // Truncated text
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w300,
-                  color: statusColor ?? Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
+      {IconData? icon, Color? statusColor, bool alignLabelLeft = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(1),
+      child: Column(
+        crossAxisAlignment: alignLabelLeft
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 0, 0, 0),
             ),
-          ],
-        ),
-      ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
+                ),
+                const SizedBox(width: 4),
+              ],
+              GestureDetector(
+                onTap: () {
+                  // Show a dialog with the full text when the text is tapped
+                  _showFullTextDialog(context, value);
+                },
+                child: Text(
+                  truncateWithEllipsis(10, value), // Truncated text
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300,
+                    color: statusColor ?? Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -490,6 +502,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
 
   Widget _buildMetricCard(String title, String value, IconData icon) {
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

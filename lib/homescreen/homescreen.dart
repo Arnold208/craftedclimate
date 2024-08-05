@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
@@ -126,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _filteredDevices.where((device) => device['status'] != 'online').length;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
           'Sense Platform',
           style: TextStyle(
@@ -225,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 4),
                       child: Container(
+                        color: Colors.white,
                         height: 40,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
@@ -633,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onSelected: (_) {
         _selectCategory(label);
       },
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       selectedColor: Colors.transparent,
       checkmarkColor: Colors.green,
       side: isSelected
@@ -672,6 +676,13 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) => solosenseScreen(device: device),
             ),
           );
+        } else if (device['model'].startsWith('Sense')) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CustomSensor(),
+            ),
+          );
         }
       },
       onLongPress: () {
@@ -683,6 +694,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       child: Card(
+        color: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
