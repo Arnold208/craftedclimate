@@ -1,58 +1,50 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class Mapscreen extends StatefulWidget {
-  const Mapscreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
 
   @override
-  State<Mapscreen> createState() => _MapscreenState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class _MapscreenState extends State<Mapscreen> {
+class MapScreenState extends State<MapScreen> {
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static const CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Map Overview",
-          style: TextStyle(
-            fontSize: 24,
-            fontFamily: 'Raleway',
-            fontWeight: FontWeight.w400,
-            color: Color.fromARGB(255, 65, 161, 70),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              // More options action
-            },
-          ),
-        ],
+      body: GoogleMap(
+        mapType: MapType.hybrid,
+        initialCameraPosition: _kGooglePlex,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.map,
-              size: 80, // Large icon size for emphasis
-              color: Color.fromARGB(255, 3, 55, 132),
-            ),
-            SizedBox(height: 20), // Spacing between icon and text
-            Text(
-              "Locate your devices on Map",
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w300,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _goToTheLake,
+        label: const Text('To the lake!'),
+        icon: const Icon(Icons.directions_boat),
       ),
     );
+  }
+
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }

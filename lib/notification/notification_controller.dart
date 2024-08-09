@@ -2,9 +2,11 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:craftedclimate/homescreen/homescreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 
 // Initialize the notification controller
 Future<void> main() async {
@@ -49,7 +51,7 @@ class NotificationController {
           channelKey: 'basic_channel',
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
-          defaultColor: Color(0xFF9D50DD),
+          defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
           importance: NotificationImportance.High,
           channelShowBadge: true,
@@ -94,8 +96,10 @@ class NotificationController {
       ReceivedAction receivedAction) async {
     if (receivedAction.actionType == ActionType.SilentAction ||
         receivedAction.actionType == ActionType.SilentBackgroundAction) {
-      print(
-          'Message sent via notification input: "${receivedAction.buttonKeyInput}"');
+      if (kDebugMode) {
+        print(
+            'Message sent via notification input: "${receivedAction.buttonKeyInput}"');
+      }
       await executeLongTaskInBackground();
     } else {
       if (receivePort == null) {
@@ -127,8 +131,13 @@ class NotificationController {
 
   /// Display notification rationale to user
   static Future<bool> displayNotificationRationale() async {
+    var logger = Logger();
     bool userAuthorized = false;
-    BuildContext context = MyApp.navigatorKey.currentContext!;
+    BuildContext? context = MyApp.navigatorKey.currentContext;
+    if (context == null) {
+      logger.e("Context is null, cannot show dialog");
+      return false;
+    }
     await showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -187,12 +196,14 @@ class NotificationController {
 
   /// Execute a long task in the background
   static Future<void> executeLongTaskInBackground() async {
-    print("starting long task");
+    var logger = Logger();
+    logger.d("starting long task");
     await Future.delayed(const Duration(seconds: 4));
     final url = Uri.parse("http://google.com");
     final re = await http.get(url);
-    print(re.body);
-    print("long task done");
+
+    logger.d(re.body);
+    logger.d("long task done");
   }
 
   /// Create a new notification

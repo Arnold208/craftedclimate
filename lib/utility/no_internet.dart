@@ -19,7 +19,7 @@ class NoInternetScreen extends StatelessWidget {
         child: Center(
           child: ElevatedButton(
             onPressed: () async {
-              if (await _checkInternetConnection()) {
+              if (await _checkInternetConnection() && context.mounted) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
