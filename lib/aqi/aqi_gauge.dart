@@ -29,11 +29,9 @@ class AQIGauge extends StatelessWidget {
             ],
             annotations: <GaugeAnnotation>[
               GaugeAnnotation(
-                widget: Container(
-                  child: Text(
-                    aqi.toStringAsFixed(2),
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
+                widget: Text(
+                  aqi.toStringAsFixed(2),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 angle: 90,
                 positionFactor: 0.5,
