@@ -4,11 +4,11 @@ import 'package:syncfusion_flutter_gauges/gauges.dart'; // Import the Syncfusion
 class AQIGauge extends StatelessWidget {
   final double aqi;
 
-  const AQIGauge({Key? key, required this.aqi}) : super(key: key);
+  const AQIGauge({super.key, required this.aqi});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 200,
       height: 200,
       child: SfRadialGauge(
@@ -32,7 +32,7 @@ class AQIGauge extends StatelessWidget {
                 widget: Container(
                   child: Text(
                     aqi.toStringAsFixed(2),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
                 angle: 90,
