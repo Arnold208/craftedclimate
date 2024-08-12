@@ -64,7 +64,8 @@ class AQICard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 6),
+            // Increase the space between the column and the gauge
+            const SizedBox(width: 16), // Increased space from 6 to 16
 
             // Gauge Column
             Expanded(
