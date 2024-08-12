@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:craftedclimate/aqi/carousel_aqi.dart';
 import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
@@ -140,6 +141,19 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> carouselItems = [
+      // Your image widgets
+      ...imgList.map((item) => Center(
+            child: Image.network(
+              item,
+              fit: BoxFit.contain,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          )),
+      // Your AQI card widgets
+      AQICard(location: "Accra", aqi: 27),
+    ];
     int onlineCount =
         _filteredDevices.where((device) => device['status'] == 'online').length;
     int offlineCount =
@@ -282,12 +296,7 @@ class HomeScreenState extends State<HomeScreen> {
                             enlargeCenterPage: true,
                             viewportFraction: 0.8,
                           ),
-                          items: imgList
-                              .map((item) => Center(
-                                    child: Image.network(item,
-                                        fit: BoxFit.cover, width: 600),
-                                  ))
-                              .toList(),
+                          items: carouselItems,
                         ),
                       ),
                     ),
