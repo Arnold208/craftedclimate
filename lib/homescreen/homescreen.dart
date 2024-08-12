@@ -33,7 +33,6 @@ class HomeScreenState extends State<HomeScreen> {
   bool _isMenuVisible = false;
   bool _isLoading = true;
 
-
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
   List<String> _categories = ['All'];
   List<Map<String, dynamic>> _allDevices = [];
@@ -248,16 +247,14 @@ class HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 4),
-
                       child: SizedBox(
-
-                      child: Container(
-                        color: Colors.white,
-
-                        height: 40,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: _categories.map(_categoryChip).toList(),
+                        child: Container(
+                          color: Colors.white,
+                          height: 40,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _categories.map(_categoryChip).toList(),
+                          ),
                         ),
                       ),
                     ),
