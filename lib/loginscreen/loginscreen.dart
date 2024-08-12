@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:craftedclimate/homescreen/homescreen.dart';
+import 'package:craftedclimate/loginscreen/signupscreen.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,8 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
 
   String? _errorMessage;
-  bool _isPasswordVisible =
-      false; // State variable to track password visibility
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -42,13 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
-        // 'email': _emailController.text,
-        // 'password': _passwordController.text,
-           'email': 'cmatthyas09@ymail.com',
-          'password':'123456789',
+        'email': _emailController.text,
+        'password': _passwordController.text,
       }),
     );
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -76,188 +74,199 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final  width = MediaQuery.of(context).size.width;
-    final  height = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/logo/cc_logo_raw.png', width: width * 0.7 , height: height * 0.4,),
-            ),
-             SizedBox(height: height * 0.1),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 240, 240, 240),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Image.asset(
+                    'assets/logo/cc_logo_raw.png',
+                    width: width * 0.7,
+                    height: height * 0.3,
                   ),
                 ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-              ),
-            ),
-             SizedBox(height: height * 0.1),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: TextField(
-                controller: _passwordController,
-        
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.grey,
+                SizedBox(height: height * 0.001),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: const TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 240, 240, 240),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
-                    onPressed: () {
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                  ),
+                ),
+                SizedBox(height: height * 0.02),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: const TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 240, 240, 240),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    obscureText: !_isPasswordVisible,
+                    textInputAction: TextInputAction.done,
+                  ),
+                ),
+                SizedBox(height: height * 0.02),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CheckboxListTile(
+                    title: const Text(
+                      "I have read and agree to Privacy Policy",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black,
+                      ),
+                    ),
+                    value: _agreeToPrivacyPolicy,
+                    onChanged: (bool? value) {
                       setState(() {
-                        _isPasswordVisible =
-                            !_isPasswordVisible; // Toggle visibility
+                        _agreeToPrivacyPolicy = value ?? false;
                       });
                     },
-                  ),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 240, 240, 240),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
+                    controlAffinity: ListTileControlAffinity.leading,
                   ),
                 ),
-                obscureText:
-                    !_isPasswordVisible, // Toggle this based on the state
-                textInputAction: TextInputAction.done,
-              ),
-            ),
-          
-             SizedBox(height: height * 0.02),
-             Align(
-              alignment: Alignment.centerRight,
-               child: TextButton(
-                onPressed: () {
-                  // Insert forgot password logic here
-                },
-                child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: 'Raleway',
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 2, 133, 239)),
-                  ),
-                ),
-                             ),
-             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: ElevatedButton(
-                onPressed: _agreeToPrivacyPolicy && !_isLoading
-                    ? _onLoginPressed
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  backgroundColor: _agreeToPrivacyPolicy
-                      ? const Color.fromARGB(255, 109, 203, 112)
-                      : Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white,
-                        ),
-                      )
-                    : const Text(
-                        'Login',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Raleway',
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: ElevatedButton(
+                    onPressed: _agreeToPrivacyPolicy && !_isLoading
+                        ? _onLoginPressed
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 20.0),
+                      minimumSize: const Size.fromHeight(50),
+                      backgroundColor: _agreeToPrivacyPolicy
+                          ? const Color.fromARGB(255, 109, 203, 112)
+                          : Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-              ),
-            ),
-            if (_errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-             SizedBox(height: height * 0.1),
-              
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Insert registration logic here
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          ),
                   ),
                 ),
-                child: const Text(
-                  'Register',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white),
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                SizedBox(height: height * 0.02),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-         
-              const SizedBox(height: 25),
-            Expanded(
-              child: CheckboxListTile(
-                title: const Text(
-                  "I have read and agree to Privacy Policy",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black),
+                const SizedBox(height: 5),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {
+                      // Insert forgot password logic here
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromARGB(255, 2, 133, 239)),
+                      ),
+                    ),
+                  ),
                 ),
-                value: _agreeToPrivacyPolicy,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _agreeToPrivacyPolicy = value ?? false;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
+              ],
             ),
-           
-          ],
+          ),
         ),
       ),
     );
