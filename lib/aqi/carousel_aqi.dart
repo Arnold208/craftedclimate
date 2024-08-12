@@ -28,7 +28,7 @@ class AQICard extends StatelessWidget {
                     const Text(
                       'AQI',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
@@ -37,7 +37,7 @@ class AQICard extends StatelessWidget {
                     Text(
                       '$aqi',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: _getColorForAQI(aqi),
                       ),
@@ -46,7 +46,7 @@ class AQICard extends StatelessWidget {
                     const Text(
                       'LOCATION',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.black54,
                       ),
@@ -55,7 +55,7 @@ class AQICard extends StatelessWidget {
                     Text(
                       location,
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),

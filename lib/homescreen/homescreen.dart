@@ -152,7 +152,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           )),
       // Your AQI card widgets
-      AQICard(location: "Accra", aqi: 27),
+      const AQICard(location: "Accra", aqi: 27),
     ];
     int onlineCount =
         _filteredDevices.where((device) => device['status'] == 'online').length;
