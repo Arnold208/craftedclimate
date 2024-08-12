@@ -1,14 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/loginscreen/loginscreen.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
 import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
 import 'package:craftedclimate/sideMenu/map/mapscreen.dart';
 import 'package:craftedclimate/sideMenu/organization/organizationscreen.dart';
 import 'package:craftedclimate/sideMenu/settings/settingscreen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:craftedclimate/bluetooth/bluetooth_scan.dart';
 import 'package:craftedclimate/notification/notification.dart';
@@ -20,12 +24,16 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
+  var logger = Logger();
   bool _isMenuVisible = false;
+  bool _isLoading = true;
+
+
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
   List<String> _categories = ['All'];
   List<Map<String, dynamic>> _allDevices = [];
@@ -76,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'location': deviceDetails['location']
               });
             } else {
-              print(
+              logger.e(
                   'Error fetching device details: ${deviceResponse.statusCode}');
             }
           }
@@ -87,14 +95,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ['All'] + deployments.map((e) => e['name'] as String).toList();
           _allDevices = allDevices;
           _filteredDevices = _allDevices; // Initially show all devices
+          _isLoading = false;
         });
       } else {
         // Handle error
-        print('Error fetching deployments: ${response.statusCode}');
+        logger.d('Error fetching deployments: ${response.statusCode}');
       }
     } else {
       // Handle missing userId
-      print('User ID not found');
+      logger.d('User ID not found');
     }
   }
 
@@ -117,6 +126,17 @@ class _HomeScreenState extends State<HomeScreen> {
               .where((device) => device['deployment'] == category)
               .toList();
     });
+  }
+
+  void logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    if (context.mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -173,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       minHeight: 12,
                     ),
                     child: const Text(
-                      '7',
+                      '8',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
@@ -187,13 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () async {
               // Create a notification
               await NotificationController.createNewNotification();
-
               // Navigate to the notification screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationScreen()),
-              );
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationScreen()),
+                );
+              }
             },
           ),
           IconButton(
@@ -227,8 +248,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 4),
+
+                      child: SizedBox(
+
                       child: Container(
                         color: Colors.white,
+
                         height: 40,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
@@ -261,11 +286,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             viewportFraction: 0.8,
                           ),
                           items: imgList
-                              .map((item) => Container(
-                                    child: Center(
-                                      child: Image.network(item,
-                                          fit: BoxFit.cover, width: 600),
-                                    ),
+                              .map((item) => Center(
+                                    child: Image.network(item,
+                                        fit: BoxFit.cover, width: 600),
                                   ))
                               .toList(),
                         ),
@@ -331,22 +354,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: _filteredDevices.length,
-                      itemBuilder: (context, index) {
-                        return _buildDeviceCard(_filteredDevices[index]);
-                      },
-                    ),
+                    _isLoading
+                        ? Center(
+                            child: Platform.isIOS
+                                ? const CupertinoActivityIndicator()
+                                : const CircularProgressIndicator(),
+                          )
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(8),
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.8,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: _filteredDevices.length,
+                            itemBuilder: (context, index) {
+                              return _buildDeviceCard(_filteredDevices[index]);
+                            },
+                          ),
                   ],
                 ),
               ),
@@ -354,7 +383,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned(
             bottom: 20,
-            right: 20,
+            right: 5,
+            left: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -365,6 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     offset: _isMenuVisible ? Offset.zero : const Offset(1, 0),
                     duration: const Duration(milliseconds: 300),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
                           width: 60,
@@ -444,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Mapscreen()),
+                                    builder: (context) => const MapScreen()),
                               );
                             },
                             child: const Column(
@@ -488,6 +519,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 2),
                                 Text(
                                   "Settings",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: FloatingActionButton(
+                            heroTag: "btn5",
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            onPressed: () {
+                              logout(context);
+                            },
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.logout),
+                                SizedBox(height: 2),
+                                Text(
+                                  "Logout",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 10,
@@ -630,7 +690,9 @@ class _HomeScreenState extends State<HomeScreen> {
         style: TextStyle(
             fontFamily: 'Raleway',
             fontWeight: FontWeight.w300,
-            color: isSelected ? Colors.green : Color.fromARGB(255, 57, 57, 57),
+            color: isSelected
+                ? Colors.green
+                : const Color.fromARGB(255, 57, 57, 57),
             fontSize: 16),
       ),
       selected: isSelected,
@@ -827,7 +889,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkBluetoothPermission(BuildContext context) async {
     await Permission.bluetooth.request();
     var status = await Permission.bluetooth.status;
-    if (status.isGranted) {
+    if (status.isGranted && context.mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const BluetoothConnectScreen()),
@@ -836,7 +898,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (await Permission.bluetooth.request().isGranted) {
         // Permission granted
       } else {
-        _showPermissionDeniedDialog(context, 'Bluetooth');
+        if (context.mounted) _showPermissionDeniedDialog(context, 'Bluetooth');
       }
     } else if (status.isPermanentlyDenied) {
       openAppSettings();
@@ -844,18 +906,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkCameraPermission(BuildContext context) async {
+    logger.i('Camera permit requested');
     await Permission.camera.request();
     var status = await Permission.camera.status;
-    if (status.isGranted) {
+    logger.d(status);
+    if (status.isGranted && context.mounted) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const QRScanner()));
     } else if (status.isDenied) {
+      logger.w('status is denied');
       if (await Permission.camera.request().isGranted) {
         // Permission granted
       } else {
-        _showPermissionDeniedDialog(context, 'Camera');
+        if (context.mounted) _showPermissionDeniedDialog(context, 'Camera');
       }
-    } else if (status.isPermanentlyDenied) {
+    } else {
       openAppSettings();
     }
   }

@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
-import 'package:craftedclimate/utility/no-internet.dart';
+import 'package:craftedclimate/utility/no_internet.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:logger/web.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -23,14 +24,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Future<bool> _hasInternet;
+  final logger = Logger();
 
   @override
   void initState() {
     super.initState();
-    _initializeAwesomeNotifications();
-    _showPermissionsDialog(); // Show the dialog for permissions
-
-    print("Calling _checkInternetConnection...");
     _hasInternet = _checkInternetConnection().timeout(
       const Duration(seconds: 10),
       onTimeout: () {
@@ -39,25 +37,28 @@ class _MyAppState extends State<MyApp> {
         return false; // Treat as no internet connection on timeout
       },
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAwesomeNotifications();
+      _showPermissionsDialog();
+    });
   }
 
   // Initialize Awesome Notifications
   void _initializeAwesomeNotifications() {
     AwesomeNotifications().initialize(
-      // Set the icon to null if you want to use the default app icon
-      null,
+      null, // Set the icon to null if you want to use the default app icon
       [
         NotificationChannel(
           channelKey: 'basic_channel',
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
-          defaultColor: Color(0xFF9D50DD),
+          defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
           importance: NotificationImportance.High,
           channelShowBadge: true,
         ),
       ],
-      // Channel groups are only visual and are not required
       channelGroups: [
         NotificationChannelGroup(
           channelGroupKey: 'basic_channel_group',
@@ -70,68 +71,62 @@ class _MyAppState extends State<MyApp> {
 
   // Show a dialog to explain permissions
   void _showPermissionsDialog() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Permissions Required'),
-            content: const Text(
-                'This app requires access to Bluetooth, Camera, Location, and Notifications to function properly. Please grant these permissions when requested.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _requestPermissions(); // Request permissions after the dialog is dismissed
-                },
-                child: const Text('Continue'),
-              ),
-            ],
-          );
-        },
-      );
-    });
+    logger.i('Permission request dialog displayed');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Permissions Required'),
+          content: const Text(
+              'This app requires access to Bluetooth, Camera, Location, and Notifications to function properly. Please grant these permissions when requested.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _requestPermissions();
+              },
+              child: const Text('Continue'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  // Request all necessary permissions
   Future<void> _requestPermissions() async {
-    // Request Bluetooth permission
-    if (Platform.isAndroid) {
+    print('Requesting permissions');
+
+    // Request Bluetooth permission (iOS-specific)
+    if (Platform.isIOS) {
       if (await Permission.bluetooth.request().isGranted) {
-        print('Bluetooth permission granted');
+        logger.d('Bluetooth permission granted');
       } else {
-        print('Bluetooth permission denied');
-      }
-    } else if (Platform.isIOS) {
-      if (await Permission.bluetooth.request().isGranted) {
-        print('Bluetooth permission granted');
-      } else {
-        print('Bluetooth permission denied');
+        logger.d('Bluetooth permission denied');
       }
     }
 
     // Request Camera permission
     if (await Permission.camera.request().isGranted) {
-      print('Camera permission granted');
+      logger.i('Camera permission granted');
     } else {
-      print('Camera permission denied');
+      logger.i('Camera permission denied');
     }
 
     // Request Location permission
-    if (await Permission.location.request().isGranted) {
-      print('Location permission granted');
+    if (await Permission.locationWhenInUse.request().isGranted) {
+      logger.i('Location permission granted');
     } else {
-      print('Location permission denied');
+      logger.i('Location permission denied');
     }
 
     // Request Notification permission
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         AwesomeNotifications().requestPermissionToSendNotifications().then((_) {
-          print('Notification permission requested');
+          logger.i('Notification permission requested');
         });
       } else {
-        print('Notification permission already granted');
+        logger.i('Notification permission already granted');
       }
     });
   }
@@ -169,21 +164,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<bool> _checkInternetConnection() async {
-    print("Executing _checkInternetConnection...");
+    logger.d("Executing _checkInternetConnection...");
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('Internet connection available');
+        logger.d('Internet connection available');
         return true; // Internet connection is available
       } else {
-        print('No internet connection found');
+        logger.d('No internet connection found');
         return false; // No internet connection
       }
     } on SocketException catch (e) {
-      print('SocketException: $e');
+      logger.e('SocketException: $e');
       return false; // No internet connection
     } catch (e) {
-      print('Error: $e');
+      logger.e('Error: $e');
       return false; // Handle other errors
     }
   }

@@ -1,18 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRScanner extends StatefulWidget {
   const QRScanner({super.key});
 
   @override
-  _QRScannerState createState() => _QRScannerState();
+  QRScannerState createState() => QRScannerState();
 }
 
-class _QRScannerState extends State<QRScanner> {
+class QRScannerState extends State<QRScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   Barcode? result;
+  var logger = Logger();
 
   @override
   void initState() {
@@ -74,7 +76,7 @@ class _QRScannerState extends State<QRScanner> {
         result = scanData;
       });
       // Perform any action with the scanned result
-      print('Scanned data: ${result?.code}');
+      logger.i('Scanned data: ${result?.code}');
     });
   }
 

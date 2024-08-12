@@ -42,11 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
-        'email': _emailController.text,
-        'password': _passwordController.text,
+        // 'email': _emailController.text,
+        // 'password': _passwordController.text,
+           'email': 'cmatthyas09@ymail.com',
+          'password':'123456789',
       }),
     );
-
+    
     setState(() {
       _isLoading = false;
     });
@@ -59,10 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('refreshToken', responseData['refreshToken']);
       await prefs.setString('userId', responseData['userid']);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
     } else {
       setState(() {
         _errorMessage = 'Login failed: ${response.reasonPhrase}';
@@ -72,14 +76,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final  width = MediaQuery.of(context).size.width;
+    final  height = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
           children: <Widget>[
-            const SizedBox(height: 45),
-            Image.asset('assets/logo/cc_logo_raw.png', height: 200, width: 200),
-            const SizedBox(height: 1),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset('assets/logo/cc_logo_raw.png', width: width * 0.7 , height: height * 0.4,),
+            ),
+             SizedBox(height: height * 0.1),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: TextField(
@@ -102,12 +111,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 textInputAction: TextInputAction.next,
               ),
             ),
-            const SizedBox(height: 25),
+             SizedBox(height: height * 0.1),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: TextField(
                 controller: _passwordController,
-
+        
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(
@@ -141,25 +150,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 textInputAction: TextInputAction.done,
               ),
             ),
-            const SizedBox(height: 25),
-            CheckboxListTile(
-              title: const Text(
-                "I have read and agree to Privacy Policy",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black),
-              ),
-              value: _agreeToPrivacyPolicy,
-              onChanged: (bool? value) {
-                setState(() {
-                  _agreeToPrivacyPolicy = value ?? false;
-                });
-              },
-              controlAffinity: ListTileControlAffinity.leading,
-            ),
-            const SizedBox(height: 10),
+          
+             SizedBox(height: height * 0.02),
+             Align(
+              alignment: Alignment.centerRight,
+               child: TextButton(
+                onPressed: () {
+                  // Insert forgot password logic here
+                },
+                child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 2, 133, 239)),
+                  ),
+                ),
+                             ),
+             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: ElevatedButton(
@@ -199,7 +210,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: const TextStyle(color: Colors.red),
                 ),
               ),
-            const SizedBox(height: 20),
+             SizedBox(height: height * 0.1),
+              
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: ElevatedButton(
@@ -223,19 +235,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                // Insert forgot password logic here
-              },
-              child: const Text(
-                'Forgot Password?',
-                style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black),
+         
+              const SizedBox(height: 25),
+            Expanded(
+              child: CheckboxListTile(
+                title: const Text(
+                  "I have read and agree to Privacy Policy",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w300,
+                      color: Colors.black),
+                ),
+                value: _agreeToPrivacyPolicy,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _agreeToPrivacyPolicy = value ?? false;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
               ),
             ),
+           
           ],
         ),
       ),

@@ -2,21 +2,25 @@ import 'dart:convert';
 import 'package:craftedclimate/aqi/aqi_gauge.dart';
 import 'package:craftedclimate/graph/custom_graph.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const DeviceDetailsScreen({required this.device, Key? key}) : super(key: key);
+  const DeviceDetailsScreen({required this.device, super.key});
 
   @override
-  _DeviceDetailsScreenState createState() => _DeviceDetailsScreenState();
+  DeviceDetailsScreenState createState() => DeviceDetailsScreenState();
 }
 
-class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
+class DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
   Map<String, dynamic>? dataPoints;
   String? timestamp;
+  var logger = Logger();
+
 
   bool isLoading = true;
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
@@ -51,19 +55,19 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             isLoading = false;
           });
         } else {
-          print('Error fetching data points: ${response.statusCode}');
+          logger.d('Error fetching data points: ${response.statusCode}');
           setState(() {
             isLoading = false;
           });
         }
       } catch (e) {
-        print('Error fetching data points: $e');
+        logger.e('Error fetching data points: $e');
         setState(() {
           isLoading = false;
         });
       }
     } else {
-      print('User ID not found');
+      logger.i('User ID not found');
       setState(() {
         isLoading = false;
       });
@@ -91,14 +95,14 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
               color: Colors.green,
             )),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Navigate to settings or handle settings action
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.settings),
+        //     onPressed: () {
+        //       // Navigate to settings or handle settings action
+        //     },
+        //   ),
+        // ],
       ),
       body: isLoading
           ? const Center(
