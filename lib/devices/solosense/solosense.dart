@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:craftedclimate/aqi/custom_gauge.dart';
+import 'package:craftedclimate/graph/custom_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -720,48 +721,53 @@ class _solosenseScreenState extends State<solosenseScreen> {
   }
 
   Widget _buildInfoColumn(String label, String value,
-      {IconData? icon, Color? statusColor}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 16,
-            fontFamily: 'Raleway',
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 0, 0, 0),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
-              ),
-              const SizedBox(width: 4),
-            ],
-            GestureDetector(
-              onTap: () {
-                // Show a dialog with the full text when the text is tapped
-                _showFullTextDialog(context, value);
-              },
-              child: Text(
-                truncateWithEllipsis(10, value), // Truncated text
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w300,
-                  color: statusColor ?? Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
+      {IconData? icon, Color? statusColor, bool alignLabelLeft = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(1),
+      child: Column(
+        crossAxisAlignment: alignLabelLeft
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 0, 0, 0),
             ),
-          ],
-        ),
-      ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  color: statusColor ?? const Color.fromARGB(255, 42, 125, 180),
+                ),
+                const SizedBox(width: 4),
+              ],
+              GestureDetector(
+                onTap: () {
+                  // Show a dialog with the full text when the text is tapped
+                  _showFullTextDialog(context, value);
+                },
+                child: Text(
+                  truncateWithEllipsis(10, value), // Truncated text
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300,
+                    color: statusColor ?? Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -836,7 +842,11 @@ class _solosenseScreenState extends State<solosenseScreen> {
     final Map<String, dynamic> location = jsonDecode(widget.device['location']);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -867,7 +877,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
           : RefreshIndicator(
               onRefresh: fetchDataPoints,
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -876,31 +886,48 @@ class _solosenseScreenState extends State<solosenseScreen> {
                       const SizedBox(height: 5),
 
                       // Device AUID, location, and status row with placeholders and values underneath
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildInfoColumn(
-                            'AUID',
-                            widget.device['deviceId'],
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.green, // Green border color
+                            width: 2, // Border width
                           ),
-                          _buildInfoColumn(
-                            'LOCATION',
-                            truncateWithEllipsis(8, location['city']),
-                            icon: Icons.public,
-                          ),
-                          _buildInfoColumn(
-                            'STATUS',
-                            widget.device['status'],
-                            statusColor: widget.device['status'] == 'online'
-                                ? Colors.green
-                                : Colors.red,
-                            icon: widget.device['status'] == 'online'
-                                ? Icons.check_circle
-                                : Icons.error,
-                          ),
-                        ],
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                        ),
+                        padding: const EdgeInsets.all(
+                            8), // Padding inside the container
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn(
+                              'AUID',
+                              widget.device['deviceId'],
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                            _buildInfoColumn(
+                              'LOCATION',
+                              truncateWithEllipsis(8, location['city']),
+                              icon: Icons.public,
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                            _buildInfoColumn(
+                              'STATUS',
+                              widget.device['status'],
+                              statusColor: widget.device['status'] == 'online'
+                                  ? Colors.green
+                                  : Colors.red,
+                              icon: widget.device['status'] == 'online'
+                                  ? Icons.check_circle
+                                  : Icons.error,
+                              alignLabelLeft:
+                                  true, // Shift the label to the left
+                            ),
+                          ],
+                        ),
                       ),
-
                       const SizedBox(height: 20),
                       // AQI Gauge
                       if (dataPoints != null && dataPoints!['co2Level'] != null)
@@ -958,32 +985,17 @@ class _solosenseScreenState extends State<solosenseScreen> {
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 0, 0, 0)),
                       ),
-                      const SizedBox(height: 16),
-                      // Mock graph or chart
-                      Container(
-                        height: 200,
-                        color: Colors.grey[200],
-                        child: const Center(
-                          child: Text(
-                            'Graph or Chart Placeholder',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Raleway',
-                                fontWeight: FontWeight.w300,
-                                color: Colors.grey),
-                          ),
+                      const SizedBox(height: 18),
+                      SizedBox(
+                        height: 400,
+                        // width: 600, // Adjust the height as needed
+                        child: SensorGraphWidget(
+                          auid: widget.device['deviceId'],
+                          base:
+                              "https://cctelemetry-dev.azurewebsites.net/solo-",
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      // Day, Week, Month tabs
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildTab('Day'),
-                          _buildTab('Week'),
-                          _buildTab('Month'),
-                        ],
-                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -1055,6 +1067,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
   Widget _buildMetricCard(
       String title, String value, IconData icon, String unit) {
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

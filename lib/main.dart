@@ -5,9 +5,13 @@ import 'package:craftedclimate/loginscreen/loginscreen.dart';
 import 'package:craftedclimate/utility/no_internet.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:logger/web.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
+  // WidgetsFlutterBinding
+  //     .ensureInitialized(); // Ensure widgets binding is initialized
+  // await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
@@ -130,6 +134,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<bool>(
         future: _hasInternet,
