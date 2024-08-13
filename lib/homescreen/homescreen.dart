@@ -4,6 +4,7 @@ import 'package:craftedclimate/aqi/carousel_aqi.dart';
 import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/homescreen/news_carousel.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
 import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
@@ -275,29 +276,53 @@ class HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 4),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: CarouselSlider(
-                          options: CarouselOptions(
-                            autoPlay: true,
-                            aspectRatio: 2.0,
-                            enlargeCenterPage: true,
-                            viewportFraction: 0.8,
+                          horizontal: 16.0, vertical: 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const NewsCarousel()));
+                                },
+                                child: Text(
+                                  'View More 👉🏼',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green.shade800),
+                                )),
                           ),
-                          items: carouselItems,
-                        ),
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 7,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: CarouselSlider(
+                              options: CarouselOptions(
+                                autoPlay: true,
+                                aspectRatio: 6 / 4,
+                                enlargeCenterPage: true,
+                                viewportFraction: 0.8,
+                              ),
+                              items: carouselItems,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
