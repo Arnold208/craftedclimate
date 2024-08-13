@@ -7,12 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SensorGraphWidget extends StatefulWidget {
   final String auid;
-  final String base; // Add this line
+  final String base;
 
   const SensorGraphWidget({
     super.key,
     required this.auid,
-    required this.base, // Add this line
+    required this.base,
   });
 
   @override
@@ -182,61 +182,73 @@ class _SensorGraphWidgetState extends State<SensorGraphWidget> {
               child: CircularProgressIndicator()) // Show a loading spinner
           : Column(
               children: [
-                // Dropdown for selecting data point
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 2.0), // Adjust padding as needed
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.green[100], // Dropdown background color
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 3,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3), // Shadow position
-                          ),
-                        ],
-                      ),
+                // Row for Dropdown and Reload Icon
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start, // Align to left
+                  children: [
+                    Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedDataPoint,
-                            icon: const Icon(Icons.arrow_drop_down,
-                                color: Colors.black),
-                            iconSize: 24,
-                            elevation: 16,
-                            dropdownColor:
-                                Colors.green[50], // Dropdown menu color
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Raleway',
-                              fontWeight: FontWeight.w300,
-                              color: Colors.black,
+                        padding: const EdgeInsets.only(left: 2.0),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color:
+                                Colors.green[100], // Dropdown background color
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 3,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3), // Shadow position
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedDataPoint,
+                                icon: const Icon(Icons.arrow_drop_down,
+                                    color: Colors.black),
+                                iconSize: 24,
+                                elevation: 16,
+                                dropdownColor:
+                                    Colors.green[50], // Dropdown menu color
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black,
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedDataPoint = newValue!;
+                                    loadCachedTelemetryData();
+                                    // Only reload chart with cached data, no API call
+                                  });
+                                },
+                                items: dataPoints.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value.toUpperCase()),
+                                  );
+                                }).toList(),
+                              ),
                             ),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedDataPoint = newValue!;
-                                loadCachedTelemetryData();
-                                // Only reload chart with cached data, no API call
-                              });
-                            },
-                            items: dataPoints
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value.toUpperCase()),
-                              );
-                            }).toList(),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh, color: Colors.black),
+                      onPressed: () {
+                        // Refresh the telemetry data
+                        fetchTelemetryData(currentTimeRange);
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 // Container for the chart
@@ -322,7 +334,6 @@ class _SensorGraphWidgetState extends State<SensorGraphWidget> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
