@@ -759,7 +759,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w300,
-                    color: statusColor ?? Color.fromARGB(255, 0, 0, 0),
+                    color: statusColor ?? const Color.fromARGB(255, 0, 0, 0),
                   ),
                   textAlign: TextAlign.center,
                 ),
