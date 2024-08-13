@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:craftedclimate/homescreen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
-import 'package:craftedclimate/utility/no_internet.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:logger/web.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  // WidgetsFlutterBinding
-  //     .ensureInitialized(); // Ensure widgets binding is initialized
-  // await dotenv.load(fileName: "assets/.env");
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   runApp(const MyApp());
+  FlutterNativeSplash.remove();
+
 }
 
 class MyApp extends StatefulWidget {
@@ -23,25 +26,50 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late Future<bool> _hasInternet;
+    late Future<bool> _isLoggedIn;
   final logger = Logger();
 
   @override
   void initState() {
     super.initState();
-    _hasInternet = _checkInternetConnection().timeout(
+     // Check for internet connection and then check if user is logged in
+    _isLoggedIn = _checkInternetConnection().then((hasInternet) async {
+      if (hasInternet) {
+        return await _checkIfLoggedIn();
+      } else {
+        return false;
+      }
+    }).timeout(
       const Duration(seconds: 10),
       onTimeout: () {
-        print(
+        logger.d(
             "Timeout: No response from _checkInternetConnection within 10 seconds.");
-        return false; // Treat as no internet connection on timeout
+        return false; // Treat as not logged in on timeout
       },
-    );
-
+    ).whenComplete(() {
+      // Remove the splash screen after initialization is complete
+      FlutterNativeSplash.remove();
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeAwesomeNotifications();
       _showPermissionsDialog();
     });
+  }
+  Future<bool> _checkIfLoggedIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('accessToken');
+    if (token == null) {
+      return false;
+    }
+
+    return await _isTokenValid(token);
+  }
+
+  Future<bool> _isTokenValid(String token) async {
+    // Implement your logic to check if the token is still valid.
+    // For example, decode the JWT token and check its expiration date.
+    // This example assumes the token is always valid (replace with real logic).
+    return true;
   }
 
   // Initialize Awesome Notifications
@@ -137,24 +165,23 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<bool>(
-        future: _hasInternet,
+        future: _isLoggedIn,
         builder: (context, snapshot) {
-          print(
+          logger.d(
               "FutureBuilder: connectionState=${snapshot.connectionState}, hasData=${snapshot.hasData}, hasError=${snapshot.hasError}");
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData && snapshot.data == true) {
-              return const LoginScreen(); // Proceed to HomeScreen if connected
-            } else if (snapshot.hasError) {
-              print('FutureBuilder hasError: ${snapshot.error}');
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              ); // Show error message if any error occurs
+              return const HomeScreen(); // Navigate to HomeScreen if logged in
             } else {
-              print('No internet connection detected');
-              return const NoInternetScreen(); // Show no internet screen
+              return const LoginScreen(); // Show login screen if not logged in
             }
+          } else if (snapshot.hasError) {
+            logger.e('FutureBuilder hasError: ${snapshot.error}');
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            ); // Show error message if any error occurs
           } else {
             return const Center(child: CircularProgressIndicator());
           }
