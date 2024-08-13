@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class SensorLoraScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const SensorLoraScreen({required this.device, Key? key}) : super(key: key);
+  const SensorLoraScreen({required this.device, super.key});
 
   @override
   State<SensorLoraScreen> createState() => _SensorLoraScreenState();
@@ -565,7 +565,7 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
   }
 
   void _showConfigureSensorDialog() {
-    Set<String> _selectedDatapointsForConfigureDialog = {
+    Set<String> selectedDatapointsForConfigureDialog = {
       ..._selectedDatapoints
     };
     showDialog(
@@ -632,7 +632,7 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
                 ],
               ),
               content: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -646,25 +646,25 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
                               Expanded(child: Text(_formatMetricName(key))),
                             ],
                           ),
-                          value: _selectedDatapointsForConfigureDialog
+                          value: selectedDatapointsForConfigureDialog
                               .contains(key),
                           onChanged: (bool? value) {
                             if (value == true &&
-                                _selectedDatapointsForConfigureDialog.length >=
+                                selectedDatapointsForConfigureDialog.length >=
                                     7) {
                               return; // Prevent checking more than 6 boxes
                             }
                             setState(() {
                               if (value == true) {
-                                _selectedDatapointsForConfigureDialog.add(key);
+                                selectedDatapointsForConfigureDialog.add(key);
                               } else {
-                                _selectedDatapointsForConfigureDialog
+                                selectedDatapointsForConfigureDialog
                                     .remove(key);
                               }
                             });
                           },
                         );
-                      }).toList(),
+                      }),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _frequencyController,
@@ -715,7 +715,7 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
                     setState(() {
                       _selectedDatapoints
                         ..clear()
-                        ..addAll(_selectedDatapointsForConfigureDialog);
+                        ..addAll(selectedDatapointsForConfigureDialog);
                       _selectedDatapoints.addAll(['Constant n', 'Constant o']);
                     });
                     _storeSettings(_formatToJson());
@@ -798,7 +798,7 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
                 ],
               ),
               content: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
