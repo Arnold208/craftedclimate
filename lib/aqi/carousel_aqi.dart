@@ -5,8 +5,7 @@ class AQICard extends StatelessWidget {
   final String location;
   final int aqi;
 
-  const AQICard({Key? key, required this.location, required this.aqi})
-      : super(key: key);
+  const AQICard({super.key, required this.location, required this.aqi});
 
   @override
   Widget build(BuildContext context) {
