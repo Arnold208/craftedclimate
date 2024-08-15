@@ -1,317 +1,246 @@
-import 'package:all_bluetooth/all_bluetooth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-final allBluetooth = AllBluetooth();
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'dart:async';
+import 'dart:math';
 
 class BluetoothConnectScreen extends StatefulWidget {
-  const BluetoothConnectScreen({super.key});
+  const BluetoothConnectScreen({Key? key}) : super(key: key);
 
   @override
   State<BluetoothConnectScreen> createState() => _BluetoothConnectScreenState();
 }
 
-class _BluetoothConnectScreenState extends State<BluetoothConnectScreen> {
-  bool listeningForClient = false;
-  final bondedDevices = ValueNotifier<List<BluetoothDevice>>([]);
-  final scannedDevices = ValueNotifier<List<BluetoothDevice>>([]);
+class _BluetoothConnectScreenState extends State<BluetoothConnectScreen>
+    with SingleTickerProviderStateMixin {
+  final ValueNotifier<List<ScanResult>> scannedDevices = ValueNotifier([]);
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  bool isScanning = false;
+  bool isDone = false;
 
   @override
   void initState() {
     super.initState();
-    const MethodChannel("method_channel").invokeMethod("permit");
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      stream: allBluetooth.streamBluetoothState,
-      builder: (context, snapshot) {
-        final bluetoothOn = snapshot.data ?? false;
-        return Scaffold(
-          floatingActionButton: _buildFloatingActionButton(bluetoothOn),
-          appBar: AppBar(
-            title: const Text("Bluetooth Connect"),
-          ),
-          body: _buildBody(bluetoothOn),
-        );
-      },
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000), // Faster pulse
     );
+
+    _animation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    FlutterBluePlus.adapterState.listen((state) {
+      setState(() {});
+    });
   }
 
-  Widget? _buildFloatingActionButton(bool bluetoothOn) {
-    if (listeningForClient) {
-      return null;
+  Future<void> _startScan() async {
+    if (!isScanning) {
+      setState(() {
+        isScanning = true;
+        isDone = false;
+      });
+      scannedDevices.value.clear();
+      _animationController.repeat(reverse: true);
+
+      FlutterBluePlus.startScan(timeout: const Duration(seconds: 60));
+      FlutterBluePlus.scanResults.listen((results) {
+        final filteredResults = results.where((result) => result
+            .advertisementData.serviceUuids
+            .any((uuid) => uuid.toString().startsWith("4fafc201")));
+        scannedDevices.value = filteredResults.toList();
+      }).onDone(() {
+        _stopScan();
+      });
     }
-    return FloatingActionButton(
-      backgroundColor:
-          bluetoothOn ? Theme.of(context).primaryColor : Colors.grey,
-      onPressed: bluetoothOn
-          ? () {
-              allBluetooth.startBluetoothServer();
-              setState(() {
-                listeningForClient = true;
-              });
-            }
-          : null,
-      child: const Icon(Icons.wifi_tethering),
-    );
   }
 
-  Widget _buildBody(bool bluetoothOn) {
-    if (listeningForClient) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text("Waiting"),
-            const CircularProgressIndicator(),
-            FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  listeningForClient = false;
-                });
-                allBluetooth.closeConnection();
-              },
-              child: const Icon(Icons.stop),
-            ),
-          ],
-        ),
+  void _stopScan() {
+    setState(() {
+      isScanning = false;
+      isDone = true;
+    });
+    _animationController.stop();
+    FlutterBluePlus.stopScan();
+  }
+
+  Future<void> _connectToDevice(BluetoothDevice device) async {
+    try {
+      await device.connect();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Connection successful!")),
+      );
+
+      // Delay for a short while before redirecting to the main page
+      await Future.delayed(const Duration(seconds: 2));
+
+      Navigator.pop(context); // Navigate back to the main page
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Connection failed: $e")),
       );
     }
-
-    return Column(
-      children: [
-        _buildBluetoothControls(bluetoothOn),
-        if (!bluetoothOn)
-          const Center(child: Text("Turn Bluetooth on"))
-        else
-          Expanded(
-            child: Column(
-              children: [
-                DeviceListWidget(
-                  notifier: bondedDevices,
-                  title: "Paired Devices",
-                ),
-                DeviceListWidget(
-                  notifier: scannedDevices,
-                  title: "Scanned Devices",
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildBluetoothControls(bool bluetoothOn) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            bluetoothOn ? "ON" : "OFF",
-            style: TextStyle(
-              color: bluetoothOn ? Colors.green : Colors.red,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: bluetoothOn
-                ? () {
-                    allBluetooth.getBondedDevices().then((newDevices) {
-                      bondedDevices.value = newDevices;
-                    });
-                  }
-                : null,
-            child: const Text("Bonded Devices"),
-          ),
-          ElevatedButton(
-            onPressed: bluetoothOn
-                ? () {
-                    allBluetooth.startDiscovery();
-                  }
-                : null,
-            child: const Text("Discover"),
-          ),
-          ElevatedButton(
-            onPressed: bluetoothOn
-                ? () {
-                    allBluetooth.stopDiscovery();
-                    allBluetooth.discoverDevices.listen((event) {
-                      scannedDevices.value = [...scannedDevices.value, event];
-                    });
-                  }
-                : null,
-            child: const Text("Stop Discovery"),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ChatScreen extends StatefulWidget {
-  final BluetoothDevice device;
-
-  const ChatScreen({super.key, required this.device});
-
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final messageListener = ValueNotifier(<String>[]);
-  final messageController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    allBluetooth.listenForData.listen((event) {
-      if (event != null) {
-        messageListener.value = [
-          ...messageListener.value,
-          event,
-        ];
-      }
-    });
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
     super.dispose();
-    messageController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.device.name),
-        actions: [
-          ElevatedButton(
-            onPressed: allBluetooth.closeConnection,
-            child: const Text("CLOSE"),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ValueListenableBuilder(
-                  valueListenable: messageListener,
-                  builder: (context, messages, child) {
-                    return ListView.builder(
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        final msg = messages[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Text(
-                                msg,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }),
+      backgroundColor: Colors.white,
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                isScanning
+                    ? "SEARCHING..."
+                    : isDone
+                        ? "DONE"
+                        : "",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      final message = messageController.text;
-                      allBluetooth.sendMessage(message);
-                      messageController.clear();
-                      FocusScope.of(context).unfocus();
-                    },
-                    child: const Icon(Icons.send),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DeviceListWidget extends StatelessWidget {
-  final String title;
-  final ValueNotifier<List<BluetoothDevice>> notifier;
-
-  const DeviceListWidget({
-    required this.notifier,
-    required this.title,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ValueListenableBuilder(
-        valueListenable: notifier,
-        builder: (context, value, child) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: _startScan,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  if (isScanning) ...[
+                    ScaleTransition(
+                      scale: _animation,
+                      child: Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.green.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.green.withOpacity(0.2),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: ValueListenableBuilder<List<ScanResult>>(
+                        valueListenable: scannedDevices,
+                        builder: (context, devices, child) {
+                          return Stack(
+                            children: List.generate(devices.length, (index) {
+                              final angle = (2 * pi * index) / devices.length;
+                              final offset = Offset(
+                                125 * cos(angle),
+                                125 * sin(angle),
+                              );
+
+                              return Transform.translate(
+                                offset: offset,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _connectToDevice(devices[index].device),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.devices,
+                                        color: Colors.black,
+                                        size: 24, // Increased icon size
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        devices[index].device.name.isNotEmpty
+                                            ? devices[index].device.name
+                                            : "Unknown Device",
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18, // Increased font size
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                  if (!isScanning && isDone) ...[
+                    ElevatedButton(
+                      onPressed: _startScan,
+                      child: const Text("Rescan"),
+                    ),
+                  ],
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.green,
+                    ),
+                    child: const Icon(
+                      Icons.bluetooth,
+                      color: Colors.white,
+                      size: 40,
                     ),
                   ),
-                  Text(value.length.toString()),
                 ],
               ),
-              Flexible(
-                fit: FlexFit.loose,
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: value.length,
-                  itemBuilder: (ctx, index) {
-                    final device = value[index];
-                    return ListTile(
-                      title: Text(device.name),
-                      subtitle: Text(device.address),
-                      onTap: () async {
-                        allBluetooth.connectToDevice(device.address);
-                      },
-                    );
-                  },
-                ),
+            ),
+          ),
+          if (isDone) ...[
+            Positioned(
+              bottom: 50,
+              left: 0,
+              right: 0,
+              child: ValueListenableBuilder<List<ScanResult>>(
+                valueListenable: scannedDevices,
+                builder: (context, devices, child) {
+                  return Column(
+                    children: devices.map((device) {
+                      return ListTile(
+                        leading: const Icon(Icons.devices, size: 24),
+                        title: Text(
+                          device.device.name.isNotEmpty
+                              ? device.device.name
+                              : "Unknown Device",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                        onTap: () => _connectToDevice(device.device),
+                      );
+                    }).toList(),
+                  );
+                },
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ],
       ),
     );
   }
