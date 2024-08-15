@@ -21,7 +21,6 @@ class DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
   String? timestamp;
   var logger = Logger();
 
-
   bool isLoading = true;
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
 

@@ -15,15 +15,22 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
 
-   <uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+<!-- Tell Google Play Store that your app uses Bluetooth LE
+     Set android:required="true" if bluetooth is necessary -->
+<uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+
+<!-- New Bluetooth permissions in Android 12
+https://developer.android.com/about/versions/12/features/bluetooth-permissions -->
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-    <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
+<!-- legacy for Android 11 or lower -->
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+
+<!-- legacy for Android 9 or lower -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
 
 
     
