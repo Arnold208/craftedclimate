@@ -54,6 +54,8 @@ dependencies:
   intl: ^0.19.0
   cached_network_image: ^3.4.0
   flutter_native_splash: ^2.4.1
+  firebase_core: ^3.3.0
+  firebase_messaging: ^15.0.4
   #sqflite: ^2.3.3+1
   #sqflite_common_ffi: ^2.3.3
 
@@ -114,7 +116,7 @@ flutter_native_splash:
     # apply when the device is in dark mode. If they are not specified, the app will use the
     # parameters from above.
     image_dark: assets/logo/cc_logo_raw.png
-    color_dark: "#042a49"
+    color_dark: "#FFFFFF"
     #icon_background_color_dark: "#eeeeee"
 
   # The position of the splash image can be set with android_gravity, ios_content_mode, and
