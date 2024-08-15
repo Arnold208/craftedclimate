@@ -21,14 +21,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
             color: Color.fromARGB(255, 65, 161, 70),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              // More options action
-            },
-          ),
-        ],
       ),
       body: const Center(
         child: Column(
@@ -36,10 +28,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
           children: [
             Icon(
               Icons.notifications,
-              size: 80, // Large icon size for emphasis
+              size: 80,
               color: Color.fromARGB(255, 3, 55, 132),
             ),
-            SizedBox(height: 20), // Spacing between icon and text
+            SizedBox(height: 20),
             Text(
               "Notification coming up",
               style: TextStyle(
