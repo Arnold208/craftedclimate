@@ -602,10 +602,83 @@ class HomeScreenState extends State<HomeScreen> {
                                         fontSize: 10,
                                         fontFamily: 'Raleway',
                                         fontWeight: FontWeight.w400,
+
+                                        color: Colors.white)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: FloatingActionButton(
+                            heroTag: "btn3",
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            onPressed: () {
+                              // Navigate to the notification screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MapScreen()),
+                              );
+                            },
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.map),
+                                SizedBox(height: 2),
+                                Text(
+                                  "Maps",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: FloatingActionButton(
+                            heroTag: "btn4",
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Settingscreen()),
+                              );
+                            },
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.settings),
+                                SizedBox(height: 2),
+                                Text(
+                                  "Settings",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'Raleway',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white),
+                                ),
+                              ],
+
                                         color: Colors.white),
                                   ),
                                 ],
                               ),
+
                             ),
                           ),
                           const SizedBox(width: 20),
