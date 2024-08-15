@@ -5,15 +5,15 @@ import 'package:craftedclimate/CLONE/notification_service.dart';
 import 'package:craftedclimate/CLONE/permission_service.dart';
 import 'package:craftedclimate/homescreen/homescreen.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
+import 'package:craftedclimate/notification/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
   await FirebaseService.initializeFirebase();
+  await NotificationService.initializeNotifications();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   runApp(const MyApp());
   FlutterNativeSplash.remove();
@@ -22,12 +22,18 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: MyApp.navigatorKey,
       theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
       debugShowCheckedModeBanner: false,
       home: const Initializer(),
+      routes: {
+        '/notification-page': (context) => const NotificationScreen(),
+      },
     );
   }
 }
