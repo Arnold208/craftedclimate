@@ -220,7 +220,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () async {
               // Create a notification
-              await NotificationController.createNewNotification();
+              // await NotificationController.createNewNotification();
               // Navigate to the notification screen
               if (context.mounted) {
                 Navigator.push(
