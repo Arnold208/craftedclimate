@@ -69,6 +69,8 @@ https://developer.android.com/about/versions/12/features/bluetooth-permissions -
 
          <meta-data android:name="com.google.android.geo.API_KEY"
                    android:value="AIzaSyD48PVvwczR-cT2dsJ3qxrGWiASf42OSSs"/>
+        <meta-data  android:name="com.google.firebase.messaging.default_notification_channel_id"
+                    android:value="basic_channel" />
 
     </application>
 

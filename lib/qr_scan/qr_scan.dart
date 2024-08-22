@@ -28,41 +28,77 @@ class QRScannerState extends State<QRScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Scanner'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.flash_on),
-            onPressed: () async {
-              await controller?.toggleFlash();
-            },
+        centerTitle: true, // Center the title
+        title: const Text(
+          'Scan Device',
+          style: TextStyle(
+            fontFamily: 'Raleway',
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
-          IconButton(
-            icon: const Icon(Icons.flip_camera_ios),
-            onPressed: () async {
-              await controller?.flipCamera();
-            },
-          )
+        ),
+        backgroundColor: Colors.green, // Background color of the AppBar
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Ensure the back button/icon color is white
+        ),
+      ),
+      body: Stack(
+        children: <Widget>[
+          QRView(
+            key: qrKey,
+            onQRViewCreated: _onQRViewCreated,
+            overlay: QrScannerOverlayShape(
+              borderColor: Colors.green,
+              borderRadius: 10,
+              borderLength: 30,
+              borderWidth: 10,
+              cutOutSize: MediaQuery.of(context).size.width * 0.8,
+              overlayColor:
+                  Colors.black.withOpacity(0.5), // Translucent outside area
+            ),
+          ),
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Column(
+                children: [
+                  const Text(
+                    'Place the QR code inside the box',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  result != null
+                      ? Text(
+                          'Barcode Type: ${describeEnum(result!.format)}\nData: ${result!.code}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: result != null
-                  ? Text(
-                      'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                  : const Text('Scan a code'),
-            ),
-          )
-        ],
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        child: const Icon(
+          Icons.flip_camera_ios,
+          color: Colors.white,
+        ),
+        onPressed: () async {
+          await controller?.flipCamera();
+          setState(() {});
+        },
       ),
     );
   }
