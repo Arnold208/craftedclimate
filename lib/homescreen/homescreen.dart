@@ -6,6 +6,7 @@ import 'package:craftedclimate/devices/devices.dart';
 import 'package:craftedclimate/devices/solosense/solosense.dart';
 import 'package:craftedclimate/homescreen/news_carousel.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
+import 'package:craftedclimate/notification/fcmTokenUpdate.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
 import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
 import 'package:craftedclimate/sideMenu/map/mapscreen.dart';
@@ -49,8 +50,14 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeFCMToken();
     _fetchCategories();
     NotificationController.startListeningNotificationEvents();
+  }
+
+  Future<void> _initializeFCMToken() async {
+    FCMTokenManager fcmTokenManager = FCMTokenManager();
+    await fcmTokenManager.checkAndUpdateFCMToken();
   }
 
   Future<void> _fetchCategories() async {
