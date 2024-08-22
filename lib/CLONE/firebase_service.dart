@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:logger/web.dart';
 import 'dart:isolate';
 import 'dart:ui';
 import 'notification_service.dart';
@@ -11,8 +12,6 @@ import '../firebase_options.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("Handling a background message: ${message.messageId}");
-
-  // You can handle the background message here, e.g., show a notification
   NotificationService.showNotification(message);
 }
 
@@ -26,10 +25,34 @@ class FirebaseService {
 
   static Future<void> _setupFirebaseMessaging() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    await messaging.requestPermission();
+    await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+);
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
 
     String? token = await messaging.getToken();
-    print('FCM Device Token: $token');
+    if (token != null) {
+      Logger().d('FCM Device Token: $token');
+    } else {
+      Logger().d('Failed to get FCM token');
+    }
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       NotificationService.showNotification(message);

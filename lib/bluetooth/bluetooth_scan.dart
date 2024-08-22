@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:math';
 
 class BluetoothConnectScreen extends StatefulWidget {
-  const BluetoothConnectScreen({Key? key}) : super(key: key);
+  const BluetoothConnectScreen({super.key});
 
   @override
   State<BluetoothConnectScreen> createState() => _BluetoothConnectScreenState();
