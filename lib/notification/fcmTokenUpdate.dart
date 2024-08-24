@@ -6,7 +6,7 @@ class FCMTokenManager {
   static const String _fcmTokenKey = 'fcmToken';
   static const String _userIdKey = 'userId';
   static const String _serverUrl =
-      'https://cctelemetry-dev.azurewebsites.net//updateToken'; // Replace with your server URL
+      'https://cctelemetry-dev.azurewebsites.net/updateToken'; // Replace with your server URL
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 

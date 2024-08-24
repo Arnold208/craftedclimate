@@ -138,12 +138,53 @@ class HomeScreenState extends State<HomeScreen> {
 
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+
+    // Retrieve the userId from SharedPreferences
+    final userId = prefs.getString('userId');
+
+    if (userId != null) {
+      // Make the request to unregister the FCM token
+      final response = await http.post(
+        Uri.parse('https://cctelemetry-dev.azurewebsites.net/unregisterToken'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'userId': userId,
+        }),
       );
+
+      if (response.statusCode == 200) {
+        // If the server successfully removed the token, clear the preferences and navigate to the login screen
+        prefs.clear();
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      } else {
+        // Handle error here if the server fails to unregister the token
+        print(
+            'Failed to unregister FCM token. Status code: ${response.statusCode}');
+        // Optionally, still log out the user or display an error message
+        prefs.clear();
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      }
+    } else {
+      // If userId is not found, proceed with logout
+      prefs.clear();
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     }
   }
 
