@@ -69,18 +69,22 @@ class _BluetoothConnectScreenState extends State<BluetoothConnectScreen>
   Future<void> _connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
-      ScaffoldMessenger.of(context).showSnackBar(
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Connection successful!")),
       );
+      }
 
       // Delay for a short while before redirecting to the main page
       await Future.delayed(const Duration(seconds: 2));
 
-      Navigator.pop(context); // Navigate back to the main page
+      if(mounted)Navigator.pop(context); // Navigate back to the main page
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Connection failed: $e")),
       );
+      }
     }
   }
 
@@ -169,8 +173,8 @@ class _BluetoothConnectScreenState extends State<BluetoothConnectScreen>
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        devices[index].device.name.isNotEmpty
-                                            ? devices[index].device.name
+                                        devices[index].device.platformName.isNotEmpty
+                                            ? devices[index].device.platformName
                                             : "Unknown Device",
                                         style: const TextStyle(
                                           color: Colors.black,
@@ -224,8 +228,8 @@ class _BluetoothConnectScreenState extends State<BluetoothConnectScreen>
                       return ListTile(
                         leading: const Icon(Icons.devices, size: 24),
                         title: Text(
-                          device.device.name.isNotEmpty
-                              ? device.device.name
+                          device.device.platformName.isNotEmpty
+                              ? device.device.platformName
                               : "Unknown Device",
                           style: const TextStyle(
                             color: Colors.black,

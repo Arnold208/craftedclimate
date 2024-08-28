@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
@@ -15,13 +16,15 @@ class MapScreen extends StatefulWidget {
 }
 
 class MapScreenState extends State<MapScreen> {
-  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+  final logger = Logger();
   List<DeviceLocation> deviceLocations = [];
   Set<Marker> _markers = {};
-    final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(5.6467, -0.1669),  // Default to Accra coordinates
+    target: LatLng(5.6467, -0.1669), // Default to Accra coordinates
     zoom: 14.4746,
   );
 
@@ -39,14 +42,17 @@ class MapScreenState extends State<MapScreen> {
         _markers = locations.map((location) {
           return Marker(
             markerId: MarkerId(location.auid),
-            position: LatLng(location.location.latitude, location.location.longitude),
+            position:
+                LatLng(location.location.latitude, location.location.longitude),
             infoWindow: InfoWindow(
               title: 'Device: ${location.auid}',
               snippet: 'Battery: ${location.battery}%',
             ),
             icon: location.status == Status.ONLINE
-                ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
-                : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                ? BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueGreen)
+                : BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueRed),
             onTap: () {
               _showDeviceDetails(location);
             },
@@ -55,7 +61,7 @@ class MapScreenState extends State<MapScreen> {
       });
     } catch (e) {
       // Handle error
-      print('Error fetching device locations: $e');
+      logger.e('Error fetching device locations: $e');
     }
   }
 
@@ -63,7 +69,8 @@ class MapScreenState extends State<MapScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
     final response = await http.get(
-      Uri.parse('https://cctelemetry-dev.azurewebsites.net/user/$userId/device-locations'),
+      Uri.parse(
+          'https://cctelemetry-dev.azurewebsites.net/user/$userId/device-locations'),
     );
 
     if (response.statusCode == 200) {
@@ -88,7 +95,8 @@ class MapScreenState extends State<MapScreen> {
                 Text('City: ${location.location.city}'),
                 Text('Street: ${location.location.street}'),
                 Text('Battery: ${location.battery}%'),
-                Text('Status: ${location.status == Status.ONLINE ? 'Online' : 'Offline'}'),
+                Text(
+                    'Status: ${location.status == Status.ONLINE ? 'Online' : 'Offline'}'),
               ],
             ),
             actions: [
@@ -116,7 +124,8 @@ class MapScreenState extends State<MapScreen> {
                 Text('City: ${location.location.city}'),
                 Text('Street: ${location.location.street}'),
                 Text('Battery: ${location.battery}%'),
-                Text('Status: ${location.status == Status.ONLINE ? 'Online' : 'Offline'}'),
+                Text(
+                    'Status: ${location.status == Status.ONLINE ? 'Online' : 'Offline'}'),
               ],
             ),
             actions: [
@@ -142,7 +151,8 @@ class MapScreenState extends State<MapScreen> {
       _markers = filteredLocations.map((location) {
         return Marker(
           markerId: MarkerId(location.auid),
-          position: LatLng(location.location.latitude, location.location.longitude),
+          position:
+              LatLng(location.location.latitude, location.location.longitude),
           infoWindow: InfoWindow(
             title: 'Device: ${location.auid}',
             snippet: 'Battery: ${location.battery}%',

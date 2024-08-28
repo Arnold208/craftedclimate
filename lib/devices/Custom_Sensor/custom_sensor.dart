@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:craftedclimate/aqi/custom_gauge.dart';
 import 'package:craftedclimate/graph/custom_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -70,22 +71,22 @@ class _SensorLoraScreenState extends State<SensorLoraScreen> {
               _isLoading = false;
             });
 
-            print('Data Points Loaded: $dataPoints'); // Debug statement
+            Logger().d('Data Points Loaded: $dataPoints'); // Debug statement
           }
         } else {
-          print('Error fetching data points: ${response.statusCode}');
+          Logger().d('Error fetching data points: ${response.statusCode}');
           setState(() {
             _isLoading = false;
           });
         }
       } catch (e) {
-        print('Error fetching data points: $e');
+        Logger().d('Error fetching data points: $e');
         setState(() {
           _isLoading = false;
         });
       }
     } else {
-      print('User ID not found');
+      Logger().d('User ID not found');
       setState(() {
         _isLoading = false;
       });
