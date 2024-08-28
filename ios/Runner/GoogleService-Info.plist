@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.attendant</string>
+	<string>com.afrilogicsolutions.craftedclimate</string>
 	<key>PROJECT_ID</key>
 	<string>crafted-climate-f4478</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:49033735763:ios:cf8655bdc3518a472c20a6</string>
+	<string>1:49033735763:ios:13043a02d7ab04f22c20a6</string>
 </dict>
 </plist>
