@@ -541,26 +541,5 @@ class DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
     );
   }
 
-  Widget _buildTab(String title) {
-    return GestureDetector(
-      onTap: () {
-        // Handle tab change
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.green[100],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          title.toUpperCase(),
-          style: const TextStyle(
-              fontSize: 16,
-              fontFamily: 'Raleway',
-              fontWeight: FontWeight.w300,
-              color: Colors.black),
-        ),
-      ),
-    );
-  }
+  
 }

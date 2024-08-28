@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FCMTokenManager {
   static const String _fcmTokenKey = 'fcmToken';
@@ -31,6 +32,7 @@ class FCMTokenManager {
   }
 
   Future<void> _sendTokenToServer(String userId, String token) async {
+    final logger = Logger();
     try {
       final response = await http.post(
         Uri.parse(_serverUrl),
@@ -44,13 +46,13 @@ class FCMTokenManager {
       );
 
       if (response.statusCode == 200) {
-        print('Token updated successfully on the server.');
+        logger.i('Token updated successfully on the server.');
       } else {
-        print(
+        logger.i(
             'Failed to update token on the server. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error sending token to server: $e');
+      logger.e('Error sending token to server: $e');
     }
   }
 }
