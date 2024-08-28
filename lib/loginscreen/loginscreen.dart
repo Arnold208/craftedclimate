@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:craftedclimate/forgotPassword/main.dart';
 import 'package:craftedclimate/homescreen/homescreen.dart';
+import 'package:craftedclimate/loginscreen/forgot_password.dart';
 import 'package:craftedclimate/loginscreen/signupscreen.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -250,11 +251,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
+
                       // Insert forgot password logic here
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const Main()));
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ForgotPasswordScreen()),
+                      );
+
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),
