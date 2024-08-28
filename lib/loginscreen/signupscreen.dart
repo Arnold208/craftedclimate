@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
+import 'package:craftedclimate/loginscreen/verify_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -96,20 +97,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = false;
     });
 
-    if (response.statusCode == 201) {
-      // Assuming sign-up is successful
-      // You can navigate to another screen or show a success message
+    if (response.statusCode == 201 && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign up successful!')),
+        const SnackBar(
+            content: Text('Sign up successful! Please verify your email.')),
       );
-      Navigator.pop(context);
-
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+      {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyScreen(email: _emailController.text),
+          ),
+        );
+      }
     } else {
+      String error = (jsonDecode(response.body)['message']);
       setState(() {
-        _errorMessage = 'Sign up failed: ${response.reasonPhrase}';
+        _errorMessage = 'Sign up failed: $error';
       });
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content: Text('Sign up failed: $error', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.red.shade400),),
+    backgroundColor: Colors.white,
+    elevation: 10,
+  ),
+);
+      }
     }
   }
 
@@ -281,14 +295,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
 
-                if (_errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
+              
               ],
             ),
           ),
