@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBE50l4B5o_LwaofrzMFqCBk9nzed8vJgY',
-    appId: '1:49033735763:ios:cf8655bdc3518a472c20a6',
+    appId: '1:49033735763:ios:13043a02d7ab04f22c20a6',
     messagingSenderId: '49033735763',
     projectId: 'crafted-climate-f4478',
     storageBucket: 'crafted-climate-f4478.appspot.com',
-    iosBundleId: 'com.example.attendant',
+    iosBundleId: 'com.afrilogicsolutions.craftedclimate',
   );
+
 }

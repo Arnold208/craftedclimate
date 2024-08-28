@@ -59,6 +59,8 @@ dependencies:
  
   flutter_blue_plus: ^1.32.11
   firebase_analytics: ^11.2.1
+  pinput: ^5.0.0
+  flutter_svg: ^2.0.10+1
 
  
 
