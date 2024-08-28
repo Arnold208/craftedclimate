@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:craftedclimate/loginscreen/loginscreen.dart';
 import 'package:craftedclimate/loginscreen/verify_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +23,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -40,7 +38,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _onSignUpPressed() async {
     setState(() {
-      _errorMessage = null;
       _isLoading = true;
     });
 
@@ -53,7 +50,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       setState(() {
-        _errorMessage = 'All fields are required.';
         _isLoading = false;
       });
       return;
@@ -61,7 +57,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (_passwordController.text.length < 8) {
       setState(() {
-        _errorMessage = 'Password must be at least 8 characters long.';
         _isLoading = false;
       });
       return;
@@ -69,7 +64,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _errorMessage = 'Passwords do not match.';
         _isLoading = false;
       });
       return;
@@ -113,7 +107,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else {
       String error = (jsonDecode(response.body)['message']);
       setState(() {
-        _errorMessage = 'Sign up failed: $error';
       });
       if(mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

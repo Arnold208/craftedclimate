@@ -11,7 +11,7 @@ import '../firebase_options.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print("Handling a background message: ${message.messageId}");
+  // print("Handling a background message: ${message.messageId}");
   NotificationService.showNotification(message);
 }
 
@@ -42,9 +42,9 @@ class FirebaseService {
     );
     
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      Logger().d('User granted permission');
     } else {
-      print('User declined or has not accepted permission');
+      Logger().d('User declined or has not accepted permission');
     }
 
     String? token = await messaging.getToken();

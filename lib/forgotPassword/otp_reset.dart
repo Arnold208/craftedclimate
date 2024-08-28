@@ -46,19 +46,23 @@ class _OtpResetState extends State<OtpReset> {
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('OTP code has been resent')),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to resend OTP code')),
         );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+     if(mounted) {
+       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Network error: ${e.toString()}')),
       );
+     }
     }
   }
 

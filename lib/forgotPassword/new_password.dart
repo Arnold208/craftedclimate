@@ -78,9 +78,11 @@ class _NewPasswordState extends State<NewPassword> {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Network error: ${e.toString()}')),
       );
+      }
       setState(() {
         _isLoading = false;
       });
