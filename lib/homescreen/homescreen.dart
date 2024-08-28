@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:craftedclimate/aqi/carousel_aqi.dart';
 import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
-import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/devices/solosense/solo_sense.dart';
 import 'package:craftedclimate/homescreen/news_carousel.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
+import 'package:craftedclimate/notification/fcmTokenUpdate.dart';
 import 'package:craftedclimate/notification/notification_controller.dart';
 import 'package:craftedclimate/sideMenu/deployment/deploymentscreen.dart';
 import 'package:craftedclimate/sideMenu/map/mapscreen.dart';
@@ -49,8 +50,14 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeFCMToken();
     _fetchCategories();
     NotificationController.startListeningNotificationEvents();
+  }
+
+  Future<void> _initializeFCMToken() async {
+    FCMTokenManager fcmTokenManager = FCMTokenManager();
+    await fcmTokenManager.checkAndUpdateFCMToken();
   }
 
   Future<void> _fetchCategories() async {
@@ -220,7 +227,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () async {
               // Create a notification
-              await NotificationController.createNewNotification();
+              // await NotificationController.createNewNotification();
               // Navigate to the notification screen
               if (context.mounted) {
                 Navigator.push(
@@ -280,24 +287,6 @@ class HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const NewsCarousel()));
-                                },
-                                child: Text(
-                                  'View More 👉🏼',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.green.shade800),
-                                )),
-                          ),
                           Container(
                             margin: const EdgeInsets.all(0),
                             decoration: BoxDecoration(
@@ -322,10 +311,64 @@ class HomeScreenState extends State<HomeScreen> {
                               items: carouselItems,
                             ),
                           ),
+                          const SizedBox(height: 16),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewsCarousel()),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(221, 65, 161,
+                                      70), // Use the specified green color
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Rounded corners
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey
+                                          .withOpacity(0.3), // Shadow color
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset:
+                                          const Offset(0, 3), // Shadow position
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'View More ',
+                                      style: TextStyle(
+                                        fontFamily: 'Raleway',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight
+                                            .w600, // Bolder font weight for emphasis
+                                        color: Colors.white, // White text color
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.article, // Newsletter icon
+                                      color: Colors.white, // White icon color
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
@@ -425,172 +468,186 @@ class HomeScreenState extends State<HomeScreen> {
                   child: AnimatedSlide(
                     offset: _isMenuVisible ? Offset.zero : const Offset(1, 0),
                     duration: const Duration(milliseconds: 300),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: FloatingActionButton(
-                            heroTag: "btn1",
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            onPressed: () {
-                              // Navigate to the notification screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const Deploymentscreen()),
-                              );
-                            },
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.device_hub),
-                                SizedBox(height: 2),
-                                Text("Deploy",
+                    child: SingleChildScrollView(
+                      scrollDirection:
+                          Axis.horizontal, // Enable horizontal scrolling
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: FloatingActionButton(
+                              heroTag: "btn1",
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation:
+                                  0, // Set elevation to 0 to remove the shadow line
+                              onPressed: () {
+                                // Navigate to the notification screen
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Deploymentscreen()),
+                                );
+                              },
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.device_hub),
+                                  SizedBox(height: 2),
+                                  Text("Deploy",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontFamily: 'Raleway',
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: FloatingActionButton(
+                              heroTag: "btn2",
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation:
+                                  0, // Set elevation to 0 to remove the shadow line
+                              onPressed: () {
+                                // Navigate to the notification screen
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Organizationscreen()),
+                                );
+                              },
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.business),
+                                  SizedBox(height: 2),
+                                  Text("Org",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontFamily: 'Raleway',
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: FloatingActionButton(
+                              heroTag: "btn3",
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation:
+                                  0, // Set elevation to 0 to remove the shadow line
+                              onPressed: () {
+                                // Navigate to the notification screen
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MapScreen()),
+                                );
+                              },
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.map),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "Maps",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 10,
                                         fontFamily: 'Raleway',
                                         fontWeight: FontWeight.w400,
-                                        color: Colors.white)),
-                              ],
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: FloatingActionButton(
-                            heroTag: "btn2",
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            onPressed: () {
-                              // Navigate to the notification screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const Organizationscreen()),
-                              );
-                            },
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.business),
-                                SizedBox(height: 2),
-                                Text("Org",
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: FloatingActionButton(
+                              heroTag: "btn4",
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation:
+                                  0, // Set elevation to 0 to remove the shadow line
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Settingscreen()),
+                                );
+                              },
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.settings),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "Settings",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 10,
                                         fontFamily: 'Raleway',
                                         fontWeight: FontWeight.w400,
-                                        color: Colors.white)),
-                              ],
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: FloatingActionButton(
-                            heroTag: "btn3",
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            onPressed: () {
-                              // Navigate to the notification screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MapScreen()),
-                              );
-                            },
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.map),
-                                SizedBox(height: 2),
-                                Text(
-                                  "Maps",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white),
-                                ),
-                              ],
+                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: FloatingActionButton(
+                              heroTag: "btn5",
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation:
+                                  0, // Set elevation to 0 to remove the shadow line
+                              onPressed: () {
+                                logout(context);
+                              },
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.logout),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "Logout",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: 'Raleway',
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: FloatingActionButton(
-                            heroTag: "btn4",
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const Settingscreen()),
-                              );
-                            },
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.settings),
-                                SizedBox(height: 2),
-                                Text(
-                                  "Settings",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: FloatingActionButton(
-                            heroTag: "btn5",
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            onPressed: () {
-                              logout(context);
-                            },
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.logout),
-                                SizedBox(height: 2),
-                                Text(
-                                  "Logout",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -599,6 +656,7 @@ class HomeScreenState extends State<HomeScreen> {
                   heroTag: "5",
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
+                  elevation: 0, // Set elevation to 0 to remove the shadow line
                   onPressed: _toggleMenu,
                   child: Icon(
                     _isMenuVisible ? Icons.close : Icons.menu,
@@ -606,7 +664,7 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
@@ -766,7 +824,7 @@ class HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => solosenseScreen(device: device),
+              builder: (context) => SoloSenseScreen(device: device),
             ),
           );
         } else if (device['model'].startsWith('Sense')) {
