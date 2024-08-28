@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 
 import '../main.dart';
 
@@ -41,14 +42,18 @@ class NotificationController {
   }
 
   @pragma('vm:entry-point')
-  static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    final logger = Logger();
     if (receivedAction.actionType == ActionType.SilentAction ||
         receivedAction.actionType == ActionType.SilentBackgroundAction) {
-      print('Message sent via notification input: "${receivedAction.buttonKeyInput}"');
+      logger.d(
+          'Message sent via notification input: "${receivedAction.buttonKeyInput}"');
       await executeLongTaskInBackground();
     } else {
       if (receivePort == null) {
-        SendPort? sendPort = IsolateNameServer.lookupPortByName('notification_action_port');
+        SendPort? sendPort =
+            IsolateNameServer.lookupPortByName('notification_action_port');
 
         if (sendPort != null) {
           sendPort.send(receivedAction);
@@ -59,7 +64,8 @@ class NotificationController {
     }
   }
 
-  static Future<void> onActionReceivedImplementationMethod(ReceivedAction receivedAction) async {
+  static Future<void> onActionReceivedImplementationMethod(
+      ReceivedAction receivedAction) async {
     MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
       '/notification-page',
       (route) => route.isFirst,
@@ -69,6 +75,6 @@ class NotificationController {
 
   static Future<void> executeLongTaskInBackground() async {
     await Future.delayed(const Duration(seconds: 4));
-    print("Long background task completed");
+    Logger().d("Long background task completed");
   }
 }

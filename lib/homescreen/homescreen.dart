@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:craftedclimate/aqi/carousel_aqi.dart';
 import 'package:craftedclimate/devices/Custom_Sensor/custom_sensor.dart';
 import 'package:craftedclimate/devices/devices.dart';
-import 'package:craftedclimate/devices/solosense/solosense.dart';
+import 'package:craftedclimate/devices/solosense/solo_sense.dart';
 import 'package:craftedclimate/homescreen/news_carousel.dart';
 import 'package:craftedclimate/loginscreen/loginscreen.dart';
 import 'package:craftedclimate/notification/fcmTokenUpdate.dart';
@@ -865,7 +865,7 @@ class HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => solosenseScreen(device: device),
+              builder: (context) => SoloSenseScreen(device: device),
             ),
           );
         } else if (device['model'].startsWith('Sense')) {

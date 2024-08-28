@@ -41,7 +41,7 @@ class _SettingscreenState extends State<Settingscreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const ListTile(
-                leading: const CircleAvatar(
+                leading: CircleAvatar(
                   radius: 25,
                   backgroundImage: NetworkImage(
                       "https://craftedclimateota.blob.core.windows.net/images/carfted%20climateArtboard%201.jpg?sp=r&st=2024-07-27T23:28:52Z&se=2025-08-30T07:28:52Z&sv=2022-11-02&sr=b&sig=eQYmFouIWVpJ9xfNm5WTKrIBqtG2vmKYrgait2TFZas%3D"),

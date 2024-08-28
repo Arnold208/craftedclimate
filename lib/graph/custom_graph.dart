@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -16,12 +17,12 @@ class SensorGraphWidget extends StatefulWidget {
   });
 
   @override
-  _SensorGraphWidgetState createState() => _SensorGraphWidgetState();
+  SensorGraphWidgetState createState() => SensorGraphWidgetState();
 }
 
-class _SensorGraphWidgetState extends State<SensorGraphWidget> {
+class SensorGraphWidgetState extends State<SensorGraphWidget> {
   late TooltipBehavior _tooltipBehavior;
-
+  final logger = Logger();
   // List to store available data points from the response
   List<String> dataPoints = [];
 
@@ -88,10 +89,10 @@ class _SensorGraphWidgetState extends State<SensorGraphWidget> {
         updateTelemetryData(jsonResponse['telemetryData']);
       } else {
         // Handle error
-        print('Failed to load data: ${response.statusCode}');
+        logger.e('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching telemetry data: $e');
+      logger.e('Error fetching telemetry data: $e');
     } finally {
       setState(() {
         isLoading = false; // Reset loading state

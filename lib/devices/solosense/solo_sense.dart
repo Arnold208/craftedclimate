@@ -2,19 +2,20 @@ import 'dart:convert';
 import 'package:craftedclimate/aqi/custom_gauge.dart';
 import 'package:craftedclimate/graph/custom_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class solosenseScreen extends StatefulWidget {
+class SoloSenseScreen extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const solosenseScreen({required this.device, super.key});
+  const SoloSenseScreen({required this.device, super.key});
 
   @override
-  State<solosenseScreen> createState() => _solosenseScreenState();
+  State<SoloSenseScreen> createState() => _SoloSenseScreenState();
 }
 
-class _solosenseScreenState extends State<solosenseScreen> {
+class _SoloSenseScreenState extends State<SoloSenseScreen> {
   Map<String, dynamic>? dataPoints;
   String? timestamp;
   bool isLoading = true;
@@ -104,7 +105,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
     List<String> datapointsList = _selectedDatapointsForSelectDialog.toList();
     String jsonDatapoints = json.encode(datapointsList);
     await prefs.setString('selectedDatapoints', jsonDatapoints);
-    print('Saved selected datapoints: $jsonDatapoints');
+    Logger().d('Saved selected datapoints: $jsonDatapoints');
   }
 
   Future<void> _loadEditableDataPoints() async {
@@ -123,7 +124,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
     final prefs = await SharedPreferences.getInstance();
     String jsonDataPoints = json.encode(_editableDataPoints);
     await prefs.setString('editableDataPoints', jsonDataPoints);
-    print('Saved editable datapoints: $jsonDataPoints');
+    Logger().d('Saved editable datapoints: $jsonDataPoints');
   }
 
   void _showSettingsMenu() {
@@ -578,19 +579,19 @@ class _solosenseScreenState extends State<solosenseScreen> {
             _isLoading = false;
           });
         } else {
-          print('Error fetching data points: ${response.statusCode}');
+          Logger().d('Error fetching data points: ${response.statusCode}');
           setState(() {
             _isLoading = false;
           });
         }
       } catch (e) {
-        print('Error fetching data points: $e');
+        Logger().d('Error fetching data points: $e');
         setState(() {
           _isLoading = false;
         });
       }
     } else {
-      print('User ID not found');
+      Logger().d('User ID not found');
       setState(() {
         _isLoading = false;
       });
@@ -619,7 +620,7 @@ class _solosenseScreenState extends State<solosenseScreen> {
       _showResponseDialog('Success', 'Settings saved successfully.');
       _storeSettings(jsonBody);
 
-      print(jsonBody);
+      Logger().d(jsonBody);
     } else {
       _showResponseDialog('Error', 'Failed to save settings.');
     }
@@ -1001,29 +1002,6 @@ class _solosenseScreenState extends State<solosenseScreen> {
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildTab(String title) {
-    return GestureDetector(
-      onTap: () {
-        // Handle tab change
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.green[100],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          title.toUpperCase(),
-          style: const TextStyle(
-              fontSize: 16,
-              fontFamily: 'Raleway',
-              fontWeight: FontWeight.w300,
-              color: Colors.black),
-        ),
-      ),
     );
   }
 
