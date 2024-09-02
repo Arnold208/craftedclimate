@@ -254,6 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Insert forgot password logic here
                       Navigator.push(
+                        
                           context,
                           MaterialPageRoute(
                               builder: (context) => const Main()));
