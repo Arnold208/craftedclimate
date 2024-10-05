@@ -60,6 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('accessToken', responseData['accessToken']);
       await prefs.setString('refreshToken', responseData['refreshToken']);
       await prefs.setString('userId', responseData['userid']);
+      await prefs.setString('username', responseData['username']);
+      await prefs.setString('email', responseData['email']);
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -251,7 +253,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-
                       // Insert forgot password logic here
                       Navigator.push(
                           context,
@@ -263,7 +264,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(
                             builder: (context) => const ForgotPasswordScreen()),
                       );
-
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),

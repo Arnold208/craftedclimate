@@ -35,6 +35,7 @@ class HomeScreenState extends State<HomeScreen> {
   var logger = Logger();
   bool _isMenuVisible = false;
   bool _isLoading = true;
+  int _notificationCount = 0; // Add this to track the notification count
 
   final String baseUrl = "https://cctelemetry-dev.azurewebsites.net";
   List<String> _categories = ['All'];
@@ -52,7 +53,43 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     _initializeFCMToken();
     _fetchCategories();
+    _loadNotificationCount();
     NotificationController.startListeningNotificationEvents();
+  }
+
+  /// Load the notification count from SharedPreferences
+  Future<void> _loadNotificationCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationCount = prefs.getInt('notificationCount') ??
+          0; // Load saved notification count
+    });
+  }
+
+  /// Update the notification count in SharedPreferences
+  Future<void> _updateNotificationCount(int count) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationCount = count;
+    });
+    await prefs.setInt('notificationCount', count);
+  }
+
+  /// Increase the notification count
+  Future<void> _incrementNotificationCount() async {
+    await _updateNotificationCount(_notificationCount + 1);
+  }
+
+  /// Decrease the notification count
+  Future<void> _decrementNotificationCount() async {
+    if (_notificationCount > 0) {
+      await _updateNotificationCount(_notificationCount - 1);
+    }
+  }
+
+  /// Reset notification count (when notifications are opened)
+  void _resetNotificationCount() {
+    _updateNotificationCount(0);
   }
 
   Future<void> _initializeFCMToken() async {
@@ -181,6 +218,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          // Notification Icon with Badge showing notification count
           IconButton(
             icon: Stack(
               clipBehavior: Clip.none,
@@ -200,34 +238,37 @@ class HomeScreenState extends State<HomeScreen> {
                     color: Color.fromARGB(166, 63, 146, 66),
                   ),
                 ),
-                Positioned(
-                  top: -3,
-                  right: -3,
-                  child: Container(
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 12,
-                      minHeight: 12,
-                    ),
-                    child: const Text(
-                      '8',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
+                if (_notificationCount >
+                    0) // Show badge only if there are notifications
+                  Positioned(
+                    top: -3,
+                    right: -3,
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                      child: Text(
+                        '$_notificationCount', // Display the notification count
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
             onPressed: () async {
-              // Create a notification
-              // await NotificationController.createNewNotification();
+              // Reset the notification count when notifications are opened
+              _resetNotificationCount();
+
               // Navigate to the notification screen
               if (context.mounted) {
                 Navigator.push(

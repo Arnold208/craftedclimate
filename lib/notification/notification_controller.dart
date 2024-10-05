@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 
@@ -38,13 +39,26 @@ class NotificationController {
   static Future<void> startListeningNotificationEvents() async {
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: onActionReceivedMethod,
+      onNotificationCreatedMethod: onNotificationCreatedMethod,
     );
   }
 
+  /// When a notification is created, increment the notification count
+  @pragma('vm:entry-point')
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification receivedNotification) async {
+    final logger = Logger();
+    logger.d("Notification created: ${receivedNotification.id}");
+
+    await _increaseNotificationCount();
+  }
+
+  /// When a notification is interacted with, decrease the notification count
   @pragma('vm:entry-point')
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
     final logger = Logger();
+
     if (receivedAction.actionType == ActionType.SilentAction ||
         receivedAction.actionType == ActionType.SilentBackgroundAction) {
       logger.d(
@@ -60,6 +74,9 @@ class NotificationController {
           return;
         }
       }
+
+      // Decrease notification count when the user interacts with the notification
+      await _decreaseNotificationCount();
       return onActionReceivedImplementationMethod(receivedAction);
     }
   }
@@ -76,5 +93,23 @@ class NotificationController {
   static Future<void> executeLongTaskInBackground() async {
     await Future.delayed(const Duration(seconds: 4));
     Logger().d("Long background task completed");
+  }
+
+  /// Helper method to increase the notification count in SharedPreferences
+  static Future<void> _increaseNotificationCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int currentCount = prefs.getInt('notificationCount') ?? 0;
+    currentCount++;
+    await prefs.setInt('notificationCount', currentCount);
+  }
+
+  /// Helper method to decrease the notification count in SharedPreferences
+  static Future<void> _decreaseNotificationCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int currentCount = prefs.getInt('notificationCount') ?? 0;
+    if (currentCount > 0) {
+      currentCount--;
+      await prefs.setInt('notificationCount', currentCount);
+    }
   }
 }
